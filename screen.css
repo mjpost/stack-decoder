@@ -1,0 +1,160 @@
+/*****************************************************************************/
+/*
+/* Common
+/*
+/*****************************************************************************/
+
+/* Global Reset */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+table {
+  border: 1px solid white;
+  border-collapse: collapse;
+}
+
+td,th {
+  padding: 5px;
+  spacing: 0px;
+  border: 0px;
+}
+
+p.highlight {
+	color: #FFFFFF;
+	border: 2px solid #CC6633;
+	width: 150px;
+	background-color: #CC6633;
+	padding:10px;
+	line-height:1.4em;
+}
+
+td.source {
+    font-size: 20pt;
+    width: 100px;
+    padding: 10px;
+    background-color: #CCCCCC;
+}
+
+li.target :hover {
+    font-weight: bold;
+    background-color: #00ffff;
+}
+
+th.small {
+  font-size: 8pt;
+}
+
+img.arrow {
+  width: 13px;
+  height: 13px;
+}
+
+body {
+  background-color: white;
+  font: palatino;
+  text-align: center; 
+}
+
+h1, h2 {
+  font-weight: lighter;
+  margin-bottom: 4pt;
+  margin-top: 8pt;
+}
+
+p {
+  margin: 1em 0;
+}
+
+a {
+  color: #00a;
+  text-decoration: none;
+}
+
+a[subtle="yes"] {
+  color: black;
+}
+
+.hidden-abstract, .unhidden-abstract {
+  text-indent: 0pt;
+  margin: 10pt;
+}
+
+.hidden-abstract { 
+  display: none; 
+}
+
+.unhidden-abstract { 
+  display: block; 
+  padding: 5pt;
+  background-color: #D8D8D8;
+}
+
+.news {
+  background-color: #CCFFFF;
+  padding: 2pt;
+}
+
+/*****************************************************************************/
+/*
+/* Home
+/*
+/*****************************************************************************/
+
+ul {
+  list-style-type: none;
+  margin-bottom: 7pt;
+}
+
+ul.real { 
+  list-style: disc inside;
+  margin-bottom: 0pt;
+}
+
+li {
+  text-indent: -10pt;
+  margin-left: 10pt;
+  margin-top: 5pt;
+}
+
+li.real {
+  text-indent: 0pt;
+  margin-left: 20pt;
+  margin-top: 5pt;
+}
+
+/*****************************************************************************/
+/*
+/* Site
+/*
+/*****************************************************************************/
+
+.site {
+  font-size: 90%;
+  text-align: left;
+  margin: 10px;
+}
+
+  .site .leftsidebar {
+    margin-top: -10pt;
+    float: left;
+    width: 180px;
+    text-align: left;
+  }
+  .site .content {
+    margin-top: 20pt;
+    margin-left: 200px;
+    margin-right: 200px;
+  }
+
+  .site .footer {
+    font-size: 80%;
+    color: #666;
+    border-top: 4px solid #eee;
+    margin-top: 2em;
+    overflow: hidden;
+  }
+
+  
