@@ -1,3 +1,5 @@
+var CHART = new Object();
+
 document.writeln("<p><table><tr>");
 
 // write out the words
@@ -37,29 +39,107 @@ function get_stack(which) {
 }
 
 
+/* Here we add a target word based on the div element label, which has
+ * the format "targetI-J", where I is the source language index and J
+ * is the index into I's translations (and is ignored).
+ */
 function add_target_word(label) {
-    var values = id2word(label);
-    word = values[0];
-    pos = values[1];
+    var word = id2word(label);
+    var pos  = id2index(label);
     
-    var covered = "";
-    var index = 0;
-    while (index++ < pos)
-        covered += "◎";
-    covered += "◉";
-    while (index++ < words.length)
-        covered += "◎";
+    var item;
+    var selected = count_selected();
+    switch(selected) {
+    case 0:
+        item = make_item(word, pos);
+        break;
+    case 1:
+        item = extend_item(make_item(word,pos), word, pos);
+        break;
+    default:
+        break;
+    }
 
-    get_stack(1).append("<div class='stack'>" + word + " [" + covered + "]</div>");
+    if (item.displayed == 0) {
+        item.displayed = 1;
+        get_stack(item.stack).append(item.$.fadeIn());
+    }
 }
 
-function make_item(words, covered) {
+function make_item(word,pos) {
     var item = new Object();
-    item.words = words;
-    item.covered = covered;
-    item.num_covered = covered.length;
+    // the words
+    item.words = "&lt;s&gt; " + word;
+    // the source-language index
+    item.pos = new Array();
+    // coverage array
+    item.pos[pos] = 1;          
+    // which stack this item will be in
+    item.stack = 1;
+
+    // coverage display
+    item.covered = create_coverage_display(item.pos);    
+
+    // generate the DOM objects that display the item
+    item.$ = $("<div></div>").addClass("stack").append($("<p></p>").append(item.words)).append(item.covered).hide();
+    item.$.click(function () { var obj = this; toggle_selection(obj); });
+    item.$.hover(function () { $(this).removeClass("stack").addClass("highlight"); },
+                 function () { if (! ($(this).hasClass("highlight")))
+                     $(this).removeClass("highlight").addClass("stack"); }
+                );
+
+    item.$.data('item', item);
+
+    item.displayed = 0;
+
+    var key = item.words + " ||| " + item.covered;
+    if (! (key in CHART)) {
+        CHART[key] = item;
+    } else {
+        $("#debug").append("<p>item already exists</p>");
+    }
+
+    return CHART[key];
+}
+
+/**
+ * Takes an existing item and a new word and creates a new item that
+ * also covers that word.
+ */
+function extend_item(olditem,word,pos) {
+    var item = new Object();
+
+    // extend the hypothesis
+    item.words += " " + word;
+
+    // copy the coverage array and extend it
+    item.pos = olditem.slice(0);
+    item.pos[pos] = 1;
+    item.stack = olditem.stack + 1;
+
+    item.covered = create_coverage_display(item.pos);
+    item.$ = $("<div></div>").addClass("stack").append($("<p></p>").append("&lt;s&gt; ").append(item.words)).append(item.covered);
+
     return item;
 }
+
+
+// This function takes an array with 1s denoting source-language words
+// that have been consumed.  It returns a nice HTML display of it.  It
+// assumes access to the global "words" array (to determine sentence
+// length only).
+function create_coverage_display(array) {
+    var covered = "";
+    for (i = 0; i < words.length; i++) {
+        if (array[i] == 1) {
+            covered += "◉";
+        } else {
+            covered += "◎";
+        }
+    }
+    return covered;
+}
+
 
 function translation_options() {
     // for (i = 1; i < words[index].length; i++) {
@@ -70,14 +150,48 @@ function translation_options() {
 }
 
 // Converts an ID to the word it represents.
-function id2word(id) {
-    var matches = id.match(/(\d+)-(\d+)/);
+function id2word(label) {
+    var matches = label.match(/(\d+)-(\d+)/);
     var i = matches[1];
     var j = matches[2];
-    return [words[i][j],i,j];
+    return words[i][j];
 }
 
-// function initialize_chart(i) {
+function id2index(label) {
+    var matches = label.match(/(\d+)-(\d+)/);
+    var i = matches[1];
+    return i;
+}
 
-// }
+function deselect_item(div) {
+    $(div).removeClass("selected highlight").addClass("stack");
+    debug("DESELECT: num=" + count_selected());
+}
 
+function select_item(div) {
+    $(div).removeClass("stack").addClass("highlight selected");
+    debug("SELECT: num=" + count_selected());
+}
+
+function toggle_selection(div) {
+    if (! ($(div).hasClass("selected"))) 
+        select_item(div);
+    else 
+        deselect_item(div);
+}
+
+function highlight(o) {
+    $(o).addClass('highlight');
+    debug("highlighting DIV:'" + $(o).id + "'");
+}
+
+
+// returns the number of current selected objects
+function count_selected() {
+    var num = $(".selected").size();
+    return num;
+}
+
+function debug(message) {
+    $("#debug > div").prepend("<p>" + message + "</p>");
+}
