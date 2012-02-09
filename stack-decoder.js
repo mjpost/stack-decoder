@@ -28,8 +28,8 @@ var stacks = Array();
 function get_stack(which) {
     // make sure the stack exists
     for (i = stacks.length; i < which; i++) {
-        $("div#stacks").append("<div id='stack" + i + "'><h3>Stack [" + i + "]</h3><hr /></div>");
-        stacks.push($("div#stack" + i));
+        $("div#stacks").append("<div id='stack" + i + "'><h3>Stack [" + i + "]</h3><hr /><p></p></div>");
+        stacks.push($("div#stack" + i + " > p"));
         $("#debug").append("<p>creating stack " + i + "</p>");
     }
 
@@ -40,10 +40,25 @@ function get_stack(which) {
 function add_target_word(label) {
     var values = id2word(label);
     word = values[0];
-    i = values[1];
-    j = values[2];
-                              
-    get_stack(1).append("<span>" + word + "</span><br/>");
+    pos = values[1];
+    
+    var covered = "";
+    var index = 0;
+    while (index++ < pos)
+        covered += "◎";
+    covered += "◉";
+    while (index++ < words.length)
+        covered += "◎";
+
+    get_stack(1).append("<div class='stack'>" + word + " [" + covered + "]</div>");
+}
+
+function make_item(words, covered) {
+    var item = new Object();
+    item.words = words;
+    item.covered = covered;
+    item.num_covered = covered.length;
+    return item;
 }
 
 function translation_options() {

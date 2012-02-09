@@ -31,6 +31,15 @@ p.highlight {
 	line-height:1.4em;
 }
 
+.stack {
+    background-color: #DDDDDD;
+    border: 1px solid #DDDDDD;
+    padding: 5px;
+    font-size: 10pt;
+    border-radius: 15px;
+    float: left;
+}
+
 td.source {
     font-size: 20pt;
     width: 100px;
