@@ -30,7 +30,7 @@ var stacks = Array();
 function get_stack(which) {
     // make sure the stack exists
     for (i = stacks.length; i < which; i++) {
-        $("div#stacks").append("<div id='stack" + i + "'><h3>Stack [" + i + "]</h3><hr /><p></p></div>");
+        $("div#stacks").append("<div id='stack" + i + "' class='stack-header'><h3>Stack [" + i + "]</h3><hr /><p></p></div>");
         stacks.push($("div#stack" + i + " > p"));
         $("#debug").append("<p>creating stack " + i + "</p>");
     }
@@ -54,7 +54,12 @@ function add_target_word(label) {
         item = make_item(word, pos);
         break;
     case 1:
-        item = extend_item(make_item(word,pos), word, pos);
+        var olditem = $(".selected").data('item');
+        debug("olditem (selected) is " + olditem.$.html());
+        if (olditem.pos[pos] != 1)
+            item = extend_item(olditem, word, pos);
+        else
+            debug("word already covered");
         break;
     default:
         break;
@@ -81,14 +86,7 @@ function make_item(word,pos) {
     item.covered = create_coverage_display(item.pos);    
 
     // generate the DOM objects that display the item
-    item.$ = $("<div></div>").addClass("stack").append($("<p></p>").append(item.words)).append(item.covered).hide();
-    item.$.click(function () { var obj = this; toggle_selection(obj); });
-    item.$.hover(function () { $(this).removeClass("stack").addClass("highlight"); },
-                 function () { if (! ($(this).hasClass("highlight")))
-                     $(this).removeClass("highlight").addClass("stack"); }
-                );
-
-    item.$.data('item', item);
+    item.$ = create_item_dom(item);
 
     item.displayed = 0;
 
@@ -102,6 +100,19 @@ function make_item(word,pos) {
     return CHART[key];
 }
 
+
+function create_item_dom(item) {
+    var obj = $("<div></div>").addClass("stack").append($("<p></p>").append(item.words)).append(item.covered).hide();
+    obj.click(function () { var obj = this; toggle_selection(obj); });
+    obj.hover(function () { $(this).removeClass("stack").addClass("highlight"); },
+              function () { if (! ($(this).hasClass("selected")))
+                  $(this).removeClass("highlight").addClass("stack"); }
+             );
+    obj.data('item', item);
+    return obj;
+}
+
+
 /**
  * Takes an existing item and a new word and creates a new item that
  * also covers that word.
@@ -109,18 +120,27 @@ function make_item(word,pos) {
 function extend_item(olditem,word,pos) {
     var item = new Object();
 
+    item.backpointer = [olditem, pos];
+
     // extend the hypothesis
-    item.words += " " + word;
+    item.words = olditem.words + " " + word;
 
     // copy the coverage array and extend it
-    item.pos = olditem.slice(0);
+    item.pos = olditem.pos.slice(0);
     item.pos[pos] = 1;
     item.stack = olditem.stack + 1;
 
     item.covered = create_coverage_display(item.pos);
-    item.$ = $("<div></div>").addClass("stack").append($("<p></p>").append("&lt;s&gt; ").append(item.words)).append(item.covered);
 
-    return item;
+    // generate the DOM objects
+    item.$ = create_item_dom(item);
+    item.displayed = 0;
+
+    var key = item.words + " ||| " + item.covered;
+    if (! (key in CHART))
+        CHART[key] = item;
+
+    return CHART[key];
 }
 
 
@@ -165,12 +185,12 @@ function id2index(label) {
 
 function deselect_item(div) {
     $(div).removeClass("selected highlight").addClass("stack");
-    debug("DESELECT: num=" + count_selected());
+    // debug("DESELECT: num=" + count_selected());
 }
 
 function select_item(div) {
     $(div).removeClass("stack").addClass("highlight selected");
-    debug("SELECT: num=" + count_selected());
+    // debug("SELECT: num=" + count_selected());
 }
 
 function toggle_selection(div) {

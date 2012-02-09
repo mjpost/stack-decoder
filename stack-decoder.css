@@ -40,6 +40,10 @@ p.highlight {
     float: left;
 }
 
+.stack-header {
+    clear: both;
+}
+
 .stack {
     background-color: #DDDDDD;
     border: 1px solid #DDDDDD;
