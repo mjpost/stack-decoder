@@ -11,24 +11,51 @@
     <!-- Homepage CSS -->
     <link rel="stylesheet" href="stack-decoder.css" type="text/css" media="screen, projection" />
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="ttable.js"></script>
+    <script src="raphael-min.js" type="text/javascript"></script>
+    <script src="http://code.jquery.com/jquery-1.7.1.min.js"  type="text/javascript" ></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js" type="text/javascript"></script>
+
+    <script src="ttable.js" type="text/javascript"></script>
   </head>
 
   <body>
     <div class="site">
+      <div class="leftsidebar">
+        <h3>Parameters</h3>
+        <p>
+          Stacks: 
+          <select>
+            <option>one</option>
+            <option selected>many</option>
+          </select>
+        </p>
+        <hr/>
+        <h3>Instructions</h3>
+        <p>
+          Click on source-language word translations to add them to
+          the chart.  Each chart hypothesis contains the words of the
+          hypothesis together a graphical depiction of which words in
+          that hypothesis have been translated.
+        </p>
+        <p>
+          You can extend hypotheses in two ways: (1) by clicking on
+          the chart item and then selecting a word to add to it, and
+          (2) by dragging target-language word translations onto an
+          hypothesis.  Only valid extensions are permitted, e.g., you
+          can't extend a hypothesis using a word translation
+          associated with a source-word that has already been
+          translated in that hypothesis.
+        </p>
+      </div>
+
       <div class="content">
         <h1>Stack Decoder</h1>
 
-        <div id="course" class="cv">
-          <script type="text/javascript" src="stack-decoder.js"></script>
+        <script type="text/javascript" src="stack-decoder.js"></script>
+
+        <div id="stacks">
         </div>
 
-        <div id="debug" style="clear: both">
-          <h3>Debug section</h3>
-          <hr />
-          <div></div>
-        </div>
 
 <!--           <script type="text/javascript"> -->
 <!--             for (i = 0; i < words.length; i++) { -->
@@ -57,6 +84,21 @@
 <!--             // Stop iterating when we reach #last -->
 <!--             if (this.id === "last") return false; }); -->
 <!--           </script> -->
+      </div>
+      <div class="rightsidebar" id="debug">
+        <!-- <div id="debug" style="clear: both"> -->
+        <h3>Debug section</h3>
+        <hr />
+        this is a test
+          <!-- <div id="matt"> -->
+            <!-- <script type="text/javascript"> -->
+            <!--   var div = $("#matt"); -->
+            <!--   var paper = Raphael(matt.offset().left, matt.offset().top, 320, 200); -->
+            <!--   var circle = paper.circle(50,40,10); -->
+            <!--   circle.attr("fill", "#f00"); -->
+            <!--   document.write(matt.offset().left); -->
+            <!-- </script> -->
+          <!-- </div> -->
       </div>
     </div>
 
