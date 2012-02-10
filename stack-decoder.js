@@ -1,41 +1,58 @@
 var CHART = new Object();
+var STACKS = Array();
 
-document.writeln("<p><table><tr>");
+var table_dom = $("<table></table>").append("<tr></tr>");
+document.writeln("<p><table border><tr>");
 
 // write out the words
 for (i = 0; i < words.length; i++) {
     var word = words[i][0];
     var label = word + i;
-    document.write("<td class='source' id='" + label + "'>" + word + "</td>");
+    var td = $("<td></td>").addClass("source").append($("<p></p>").attr("id",label).append(word));
+    document.write("<td><p class='source' id='" + label + "'>" + word + "</p></td>");
     // $("td#" + label).click(function() { translation_options(i); });
 }
-document.writeln("</tr><tr>");
+document.write("</tr><tr>");
 // write out the translation options for each word
 for (i = 0; i < words.length; i++) {
-    document.write("<td class='target' id='target" + i + "'><ul>");
+    document.write("<td>");
     for (j = 1; j < words[i].length; j++) {
         var word = words[i][j];
         var label = "target" + i + "-" + j;
-        document.writeln("<li class='target' id='" + label + "'><span class='target' id='" + label + "'>" + word + "</span></li>");
-        $("li#" + label).click(function() { obj = this; add_target_word(obj.id); });
+
+        var p = $("<p></p>").attr("id", label).val("MATT");
+
+        document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
+        $("p#" + label).click(function() { obj = this; add_target_word(obj.id); });
+
+        // var p = $("<p></p>");
+        // document.write(p.html());
+            // .attr("id", label)
+            // .addClass("target")
+            // .val("matt");
+            // .click(function() { var obj = this; add_target_word(obj.id); })
+            // .draggable({
+            //     cancel: "a.ui-icon",
+            //     revert: "invalid",
+            //     cursor: "move",
+            // })
+            // .addClass("target");
+        // document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
+        // document.write(p.html());
     }
-    document.write("</ul></td>");
+    document.write("</td>");
 }
 document.writeln("</tr></table></p>");
 
-$("div#course").after("<div id='stacks'></div>")
-
-var stacks = Array();
-
 function get_stack(which) {
     // make sure the stack exists
-    for (i = stacks.length; i < which; i++) {
+    for (i = STACKS.length; i < which; i++) {
         $("div#stacks").append("<div id='stack" + i + "' class='stack-header'><h3>Stack [" + i + "]</h3><hr /><p></p></div>");
-        stacks.push($("div#stack" + i + " > p"));
+        STACKS.push($("div#stack" + i + " > p"));
         $("#debug").append("<p>creating stack " + i + "</p>");
     }
 
-    return stacks[which-1];
+    return STACKS[which-1];
 }
 
 
@@ -55,11 +72,11 @@ function add_target_word(label) {
         break;
     case 1:
         var olditem = $(".selected").data('item');
-        debug("olditem (selected) is " + olditem.$.html());
+        // debug("olditem (selected) is " + olditem.$.html());
         if (olditem.pos[pos] != 1)
             item = extend_item(olditem, word, pos);
-        else
-            debug("word already covered");
+        // else
+        //     debug("word already covered");
         break;
     default:
         break;
@@ -91,11 +108,8 @@ function make_item(word,pos) {
     item.displayed = 0;
 
     var key = item.words + " ||| " + item.covered;
-    if (! (key in CHART)) {
+    if (! (key in CHART))
         CHART[key] = item;
-    } else {
-        $("#debug").append("<p>item already exists</p>");
-    }
 
     return CHART[key];
 }
@@ -108,6 +122,25 @@ function create_item_dom(item) {
               function () { if (! ($(this).hasClass("selected")))
                   $(this).removeClass("highlight").addClass("stack"); }
              );
+
+    obj.droppable({
+        accept: ".source",
+        activeClass: "highlight",
+        toleranace: 'pointer',
+        drop: function(event, ui) {
+            var item = ui.draggable.data('item');
+            var word = item.words;
+            var pos  = item.pos;
+            extend_item($(this).data('item'), word, pos)
+        },
+        // over: function(event, ui) {
+        //     var item = ui.draggable.data('item');
+        //     var word = item.words;
+        //     var pos  = item.pos;
+        //     if (item.pos[pos] == 1)
+        // }
+    });
+
     obj.data('item', item);
     return obj;
 }
@@ -189,7 +222,8 @@ function deselect_item(div) {
 }
 
 function select_item(div) {
-    $(div).removeClass("stack").addClass("highlight selected");
+    $(".selected").removeClass("selected highlight").addClass("stack");
+    $(div).addClass("highlight selected");
     // debug("SELECT: num=" + count_selected());
 }
 
