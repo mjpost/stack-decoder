@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="stack-decoder.css" type="text/css" media="screen, projection" />
 
     <script src="raphael-min.js" type="text/javascript"></script>
+
+	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
+
     <script src="http://code.jquery.com/jquery-1.7.1.min.js"  type="text/javascript" ></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js" type="text/javascript"></script>
 
@@ -21,15 +25,59 @@
   <body>
     <div class="site">
       <div class="leftsidebar">
-        <h3>Parameters</h3>
-        <p>
-          Stacks: 
-          <select>
-            <option>one</option>
-            <option selected>many</option>
-          </select>
-        </p>
-        <hr/>
+        <h3 class="parameters">Parameters...</h3>
+        <div id="parameters" style="padding: 0px; display: none">
+          <table class="parameters">
+            <tr>
+              <td>Stacks</td>
+              <td>
+                <select id="numstacks">
+                  <option>one</option>
+                  <option selected>many</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Edges</td>
+              <td>
+                <button id="show-edges">Hidden</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Candidates</td>
+              <td>
+                <select id="numcandidates">
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5+</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Backpointers</td>
+              <td><button id="show-backpointers">Hidden</button></td>
+            </tr>
+          </table>
+        </div>
+
+        <script type="text/javascript">
+          $("h3.parameters").click(function(e) {
+            var h3 = $("h3.parameters");
+            var div = h3.next('div');
+            if (div.is(":hidden")) {
+              div.slideDown();
+              // h3.text("Parameters");
+            } else {
+              div.slideUp();
+              // h3.text("Parameters");
+            }});
+          // ▼▶
+        </script>
+
+        <br/>
+
         <h3>Instructions</h3>
         <p>
           Click on source-language word translations to add them to
@@ -49,18 +97,11 @@
       </div>
 
       <div class="content">
-        <h1>Stack Decoder</h1>
 
-        <script type="text/javascript" src="stack-decoder.js"></script>
-
-        <div id="stacks">
-        </div>
-
+        <h1>Stack decoder</h1>
 
 <!--           <script type="text/javascript"> -->
 <!--             for (i = 0; i < words.length; i++) { -->
- 
-
 <!--             var hasClass = false; -->
 
 <!--             function toggle() { -->
@@ -101,6 +142,8 @@
           <!-- </div> -->
       </div>
     </div>
+
+    <script type="text/javascript" src="stack-decoder.js"></script>
 
   </body>
 </html>

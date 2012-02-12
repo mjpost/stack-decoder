@@ -1,53 +1,77 @@
 var CHART = new Object();
 var STACKS = Array();
 
-var table_dom = $("<table></table>").append("<tr></tr>");
-document.writeln("<p><table border><tr>");
+/* We
+ */
+var table = $("<table></table>");
 
 // write out the words
+var row = $("<tr></tr>");
 for (i = 0; i < words.length; i++) {
     var word = words[i][0];
     var label = word + i;
-    var td = $("<td></td>").addClass("source").append($("<p></p>").attr("id",label).append(word));
-    document.write("<td><p class='source' id='" + label + "'>" + word + "</p></td>");
+    func = function(index) {
+        return function() {
+            debug("showing " + index);
+            var element = $("#targetlist" + index);
+            if (element.is(":visible"))
+                $("#targetlist" + index).slideUp();
+            else
+                $("#targetlist" + index).slideDown();
+        }
+    }
+    var td = $("<td></td>")
+        .append($("<p></p>")
+                .addClass("source")
+                .attr("id",label)
+                .append(word)
+                .click(func(i)));
+    row.append(td);
+    // document.write("<td><p class='source' id='" + label + "'>" + word + "</p></td>");
     // $("td#" + label).click(function() { translation_options(i); });
 }
-document.write("</tr><tr>");
+table.append(row);
+
 // write out the translation options for each word
+row = $("<tr></tr>").attr("id", "targetwords");
 for (i = 0; i < words.length; i++) {
-    document.write("<td>");
+    // document.write("<td>");
+    var list = $("<ul></ul>").attr("id", "targetlist" + i).addClass("translation").hide();
     for (j = 1; j < words[i].length; j++) {
         var word = words[i][j];
         var label = "target" + i + "-" + j;
 
-        var p = $("<p></p>").attr("id", label).val("MATT");
+        // document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
+        // $("p#" + label).click(function() { obj = this; add_target_word(obj.id); });
 
-        document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
-        $("p#" + label).click(function() { obj = this; add_target_word(obj.id); });
-
-        // var p = $("<p></p>");
-        // document.write(p.html());
-            // .attr("id", label)
-            // .addClass("target")
-            // .val("matt");
-            // .click(function() { var obj = this; add_target_word(obj.id); })
-            // .draggable({
-            //     cancel: "a.ui-icon",
-            //     revert: "invalid",
-            //     cursor: "move",
-            // })
-            // .addClass("target");
+        var item = $("<li></li>")
+            .attr("id", label)
+            .addClass("target")
+            .text(word)
+            .click(function() { var obj = this; add_target_word(obj.id); })
+            .draggable({
+                cancel: "a.ui-icon",
+                revert: "invalid",
+                cursor: "move",
+            })
+            .addClass("target");
+        list.append(item);
         // document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
         // document.write(p.html());
     }
-    document.write("</td>");
+    row.append($("<td></td>").append(list));
+    // document.write("</td>");
 }
-document.writeln("</tr></table></p>");
+table.append(row);
+$("div.content").append($("<h1></h1>").val("Stack decoder"));
+$("div.content").append(table);
+$("div.content").append($("<div></div>").attr("id","stacks"));
+// document.writeln("</tr></table></p>");
 
 function get_stack(which) {
     // make sure the stack exists
     for (i = STACKS.length; i < which; i++) {
-        $("div#stacks").append("<div id='stack" + i + "' class='stack-header'><h3>Stack [" + i + "]</h3><hr /><p></p></div>");
+        $("div#stacks").append("<div id='stack" + i + "' class='stack-header'><h3>Stack [" + (i+1) + "]</h3><hr /><p></p></div>");
         STACKS.push($("div#stack" + i + " > p"));
         $("#debug").append("<p>creating stack " + i + "</p>");
     }
