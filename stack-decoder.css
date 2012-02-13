@@ -16,6 +16,10 @@ table {
   border-collapse: collapse;
 }
 
+/*
+ * PARAMETERS SECTION
+ */
+
 table.parameters {
     border: none;
 }
@@ -30,7 +34,9 @@ ul.translation {
     list-style: none;
     width: 100px;
     position: relative;
-    top: -29px;
+    top: 1px;
+    margin-top:-1px;
+    /* top: -29px; */
 }
 
 li.translation {
@@ -38,7 +44,8 @@ li.translation {
     border-collapse: collapse;
     border-radius: 0px;
     padding: 3px;
-    margin-top: -1px;
+    margin-top: 0px;
+    font-size: 14pt;
 }
 
 li.hilite {
@@ -61,11 +68,6 @@ li.illegal {
 /*     border-radius: 0px; */
 /* } */
 
-.hilite {
-    border: 1px dotted red;
-    background-color: yellow;
-}
-
 td,th {
   padding: 1px;
   spacing: 0px;
@@ -73,8 +75,11 @@ td,th {
   text-align: center;
 }
 
-tr.targetwords td {
-    vertical-align: top;
+h1 {
+    background-color: black;
+    font-weight: bold;
+    color: white;
+    padding: 5px;
 }
 
 a:link.parameters {
@@ -99,17 +104,16 @@ button.selected {
     background-color: yellow;
 }
 
-p.highlight {
-	color: #FFFFFF;
-	border: 2px solid #CC6633;
-	width: 150px;
-	background-color: #CC6633;
-	padding: 10px;
-	line-height: 1.4em;
-}
+/* .itemhilite { */
+/* 	color: #FFFFFF; */
+/* 	border: 2px solid #CC6633; */
+/* 	width: 150px; */
+/* 	background-color: #CC6633; */
+/* 	padding: 10px; */
+/* 	line-height: 1.4em; */
+/* } */
 
-
-.highlight {
+.itemhilite {
     background-color: yellow;
     border: 1px solid #DDDDDD;
     font-size: 10pt;
@@ -133,13 +137,21 @@ inherit properties properly */
 }
 
 .stack {
-    background-color: #cccccc;
-    border: 1px solid #cccccc;
     margin: 3px;
     padding: 5px;
     font-size: 10pt;
     border-radius: 15px;
     float: left;
+}
+
+.stackhilite {
+    background-color: yellow;
+    border: 1px solid #cccccc;
+}
+
+.stacknohilite {
+    background-color: #cccccc;
+    border: 1px solid #cccccc;
 }
 
 .source {
@@ -150,12 +162,8 @@ inherit properties properly */
     spacing: 0px;
     background-color: #ffffff;
     border: none;
-}
-
-.source :hover {
-    border: 1px solid black;
-    padding: 0px;
-    spacing: 0px;
+    float: left;
+    text-align: center;
 }
 
 p.highlight {

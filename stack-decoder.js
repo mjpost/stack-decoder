@@ -1,45 +1,15 @@
 var CHART = new Object();
 var STACKS = Array();
 
-var table = $("<table></table>");
 /*
- * SOURCE LANGUAGE WORDS
+ * Build lists of source- and target-language words.
  */
-var row = $("<tr></tr>");
+var row = $("<div></div>").css({"height": "200px"});
 for (i = 0; i < words.length; i++) {
-    var word = words[i][0];
-    var label = "source" + i;
-    func = function(index) {
-        return function() {
-            var element = $("#targetlist" + index);
-            if (element.is(":visible")) {
-                $("#targetlist" + index).slideUp();
-                $("#source" + index).parent().find("p").css({border: "none"});
-            } else {
-                $("#targetlist" + index).slideDown();
-                $("#source" + index).parent().find("p").css({border: "1px solid black"});
-            }
-        }
-    }
-    var td = $("<td></td>")
-        .addClass("source")
-        .append($("<p></p>")
-                .attr("id",label)
-                .append(word)
-                .click(func(i)));
-    row.append(td);
-    // document.write("<td><p class='source' id='" + label + "'>" + word + "</p></td>");
-    // $("td#" + label).click(function() { translation_options(i); });
-}
-table.append(row);
-
-/*
- * TARGET LANGUAGE TRANSLATIONS
- */
-row = $("<tr></tr>").attr("id", "targetwords");
-for (i = 0; i < words.length; i++) {
-    // document.write("<td>");
-    var list = $("<ul></ul>").attr("id", "targetlist" + i).addClass("translation").hide();
+    var list = $("<ul></ul>")
+        .attr("id", "targetlist" + i)
+        .addClass("translation")
+        .hide();
     for (j = 1; j < words[i].length; j++) {
         var word = words[i][j];
         var label = "target" + i + "-" + j;
@@ -48,6 +18,7 @@ for (i = 0; i < words.length; i++) {
             .attr("id", label)
             .addClass("translation nohilite")
             .text(word)
+            .data('word', word)
             .data('pos', i)
             .click(function() { 
                 /* If the user clicks on the word and no other
@@ -57,7 +28,7 @@ for (i = 0; i < words.length; i++) {
                 // var num_selected = count_selected();
                 // if (num_selected == 0) {
                     var obj = this; 
-                    add_target_word(obj.id); 
+                    add_target_word(obj); 
                 // }
             })
             .hover(function(e) {
@@ -96,13 +67,39 @@ for (i = 0; i < words.length; i++) {
         // document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
         // document.write(p.html());
     }
-    row.append($("<td></td>").append(list));
-    // document.write("</td>");
+    list.append($("<br></br>").css({"clear":"both"}));
+
+    var word = words[i][0];
+    var label = "source" + i;
+    func = function(index) {
+        return function() {
+            var element = $("#targetlist" + index);
+            if (element.is(":visible")) {
+                $("#targetlist" + index).slideUp();
+                $("#source" + index).parent().find("p").css({border: "none"});
+            } else {
+                $("#targetlist" + index).slideDown();
+                $("#source" + index).parent().find("p").css({border: "1px solid black"});
+            }
+        }
+    }
+
+    var td = $("<div></div>")
+        .addClass("source")
+        .attr("id",label)
+        .append(word)
+        .click(func(i))
+        .append(list);
+    row.append(td);
+    // document.write("<td><p class='source' id='" + label + "'>" + word + "</p></td>");
+    // $("td#" + label).click(function() { translation_options(i); });
 }
-table.append(row);
-$("div.content").append($("<h1></h1>").val("Stack decoder"));
-$("div.content").append(table);
-$("div.content").append($("<div></div>").attr("id","stacks"));
+
+$("div.content")
+    .append(row)
+    .append($("<div></div>").css({"clear":"both"}))
+    .append($("<div></div>").
+            attr("id","stacks"));
 // document.writeln("</tr></table></p>");
 
 function get_stack(which) {
@@ -129,9 +126,9 @@ function get_stack(which) {
  * the format "targetI-J", where I is the source language index and J
  * is the index into I's translations (and is ignored).
  */
-function add_target_word(label) {
-    var word = id2word(label);
-    var pos  = id2index(label);
+function add_target_word(obj) {
+    var word = $(obj).data('word');
+    var pos  = $(obj).data('pos');
     
     var item;
     var selected = count_selected();
@@ -151,7 +148,7 @@ function add_target_word(label) {
         break;
     }
 
-    if (item.displayed == 0) {
+    if (item != null && item.displayed == 0) {
         item.displayed = 1;
         get_stack(item.stack).append(item.$.fadeIn());
     }
@@ -186,37 +183,41 @@ function make_item(word,pos) {
 
 function create_item_dom(item) {
     var obj = $("<div></div>")
-        .addClass("stack")
+        .addClass("stack stacknohilite")
         .append($("<p></p>")
                 .append(item.words))
-        .append(item.covered).hide();
-    obj.click(function () { var obj = this; toggle_selection(obj); });
+        .append(item.covered)
+        .hide()
+        .click(function () { 
+            var obj = this; toggle_selection(obj); 
+        })
+        .droppable({
+            accept: ".translation",
+            activeClass: "highlight",
+            toleranace: 'pointer',
+            drop: function(event, ui) {
+                var word = ui.draggable.data('word');
+                var pos  = ui.draggable.data('pos');
+                var item = extend_item($(this).data('item'), word, pos)
+                get_stack(item.stack).append(item.$.fadeIn());
+            },
+        })
+        .data('item', item)
+        .hover(function () { 
+            $(this).removeClass("stacknohilite").addClass("stackhilite");
+        }, function () { 
+            if (! ($(this).hasClass("selected")))
+                $(this).removeClass("stackhilite").addClass("stacknohilite");
+        });
 
-    obj.hover(function () { $(this).removeClass("stack").addClass("highlight"); },
-              function () { if (! ($(this).hasClass("selected")))
-                  $(this).removeClass("highlight").addClass("stack"); }
-             );
+    return obj;
 
-    obj.droppable({
-        accept: ".source",
-        activeClass: "highlight",
-        toleranace: 'pointer',
-        drop: function(event, ui) {
-            var item = ui.draggable.data('item');
-            var word = item.words;
-            var pos  = item.pos;
-            extend_item($(this).data('item'), word, pos)
-        },
         // over: function(event, ui) {
         //     var item = ui.draggable.data('item');
         //     var word = item.words;
         //     var pos  = item.pos;
         //     if (item.pos[pos] == 1)
         // }
-    });
-
-    obj.data('item', item);
-    return obj;
 }
 
 
