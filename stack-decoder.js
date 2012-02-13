@@ -292,14 +292,17 @@ function id2index(label) {
 }
 
 function deselect_item(div) {
-    $(div).removeClass("selected highlight").addClass("stack");
+    // deselect this item
+    $(div).removeClass("selected stackhilite").addClass("stacknohilite");
     // debug("DESELECT: num=" + count_selected());
 }
 
 function select_item(div) {
-    $(".selected").removeClass("selected highlight").addClass("stack");
-    $(div).addClass("highlight selected");
-    // debug("SELECT: num=" + count_selected());
+    // deselect all other items
+    $(".selected").removeClass("selected stackhilite").addClass("stacknohilite");
+
+    // select this item
+    $(div).addClass("stackhilite selected");
 }
 
 function toggle_selection(div) {

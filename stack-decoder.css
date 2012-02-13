@@ -34,17 +34,15 @@ ul.translation {
     list-style: none;
     width: 100px;
     position: relative;
-    top: 1px;
-    margin-top:-1px;
+    border-collapse: collapse;
+    top: 2px;
     /* top: -29px; */
 }
 
 li.translation {
     border: 1px solid black;
-    border-collapse: collapse;
     border-radius: 0px;
     padding: 3px;
-    margin-top: 0px;
     font-size: 14pt;
 }
 
@@ -113,15 +111,15 @@ button.selected {
 /* 	line-height: 1.4em; */
 /* } */
 
-.itemhilite {
-    background-color: yellow;
-    border: 1px solid #DDDDDD;
-    font-size: 10pt;
-    border-radius: 15px;
-    float: left;
-    margin: 3px;
-    padding: 5px;
-}
+/* .itemhilite { */
+/*     background-color: yellow; */
+/*     border: 1px solid #DDDDDD; */
+/*     font-size: 10pt; */
+/*     border-radius: 15px; */
+/*     float: left; */
+/*     margin: 3px; */
+/*     padding: 5px; */
+/* } */
 
 .stack-header {
     clear: both;
