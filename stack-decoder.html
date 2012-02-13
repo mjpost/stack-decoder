@@ -1,8 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<!-- The two dashed lines at the top of this file ensure that it is 
-     processed by Jekyll; do not remove them-->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -16,6 +14,7 @@
 	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
 
+    <!-- location of t-table data -->
     <script src="ttable.js" type="text/javascript"></script>
   </head>
 
@@ -55,6 +54,10 @@
             <tr>
               <td>Backpointers</td>
               <td><button id="show-backpointers">Hidden</button></td>
+            </tr>
+            <tr>
+              <td>Dynamic programming</td>
+              <td><button id="dp">Off</button></td>
             </tr>
           </table>
         </div>
@@ -124,10 +127,9 @@
 <!--           </script> -->
       </div>
       <div class="rightsidebar" id="debug">
-        <!-- <div id="debug" style="clear: both"> -->
-        <h3>Debug section</h3>
+        <h3>Debugging output</h3>
         <hr />
-        this is a test
+        <div></div>
           <!-- <div id="matt"> -->
             <!-- <script type="text/javascript"> -->
             <!--   var div = $("#matt"); -->

@@ -30,15 +30,17 @@ ul.translation {
     list-style: none;
     width: 100px;
     position: relative;
-    top: -20px;
+    top: -29px;
 }
 
 ul.translation li {
     border: 1px solid black;
     border-collapse: collapse;
-    border-radius: 3px;
+    border-radius: 0px;
     padding: 3px;
-    margin-top: 3px;
+    margin-top: -1px;
+    background-color: #C6DEFF;
+    vertical-align: top;
 }
 
 td,th {
@@ -96,11 +98,20 @@ p.highlight {
 
 .stack-header {
     clear: both;
+
+    /* this is really important -- without it, children don't seem to
+inherit properties properly */
+    overflow: auto;
+    
+    background-color: #eeeeee;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 5px;
 }
 
 .stack {
-    background-color: #DDDDDD;
-    border: 1px solid #DDDDDD;
+    background-color: #cccccc;
+    border: 1px solid #cccccc;
     margin: 3px;
     padding: 5px;
     font-size: 10pt;
@@ -112,17 +123,24 @@ p.highlight {
     font-size: 20pt;
     height: 30px;
     width: 100px;
-    padding: 1px;
-    background-color: #CCCCCC;
-    border-radius: 3px;
+    padding: 0px;
+    spacing: 0px;
+    background-color: #ffffff;
+    border: 1px solid white;
+}
+
+.source :hover {
+    border: 1px solid black;
+    padding: 0px;
+    spacing: 0px;
 }
 
 p.target {
     font-size: 14pt;
-    padding: 2px;
+    padding: 0px;
     background-color: blue;
     color: white;
-    border-radius: 10px;
+    border-radius: 0px;
 }
 
 /* .target :hover { */
@@ -204,9 +222,6 @@ div #content {
 .site .content {
     float: left;
     width: 500px;
-    /* margin-top: 20px; */
-    /* margin-left: 200px; */
-    /* margin-right: 200px; */
 }
 
 .site .rightsidebar {

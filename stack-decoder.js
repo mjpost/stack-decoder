@@ -12,17 +12,19 @@ for (i = 0; i < words.length; i++) {
     var label = word + i;
     func = function(index) {
         return function() {
-            debug("showing " + index);
             var element = $("#targetlist" + index);
-            if (element.is(":visible"))
+            if (element.is(":visible")) {
                 $("#targetlist" + index).slideUp();
-            else
+                $("#" + words[index][0] + index).parent().find("p").css({border: "1px solid white"});
+            } else {
                 $("#targetlist" + index).slideDown();
+                $("#" + words[index][0] + index).parent().find("p").css({border: "1px solid black"});
+            }
         }
     }
     var td = $("<td></td>")
+        .addClass("source")
         .append($("<p></p>")
-                .addClass("source")
                 .attr("id",label)
                 .append(word)
                 .click(func(i)));
@@ -40,9 +42,6 @@ for (i = 0; i < words.length; i++) {
     for (j = 1; j < words[i].length; j++) {
         var word = words[i][j];
         var label = "target" + i + "-" + j;
-
-        // document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
-        // $("p#" + label).click(function() { obj = this; add_target_word(obj.id); });
 
         var item = $("<li></li>")
             .attr("id", label)
@@ -71,9 +70,17 @@ $("div.content").append($("<div></div>").attr("id","stacks"));
 function get_stack(which) {
     // make sure the stack exists
     for (i = STACKS.length; i < which; i++) {
-        $("div#stacks").append("<div id='stack" + i + "' class='stack-header'><h3>Stack [" + (i+1) + "]</h3><hr /><p></p></div>");
-        STACKS.push($("div#stack" + i + " > p"));
-        $("#debug").append("<p>creating stack " + i + "</p>");
+        var stackdiv = $("<div></div>")
+            .attr("id", "stack" + i)
+            .addClass('stack-header')
+            .append($("<h3></h3>")
+                    .text("Stack [" + (i+1) + "]"));
+        $("div#stacks").append(stackdiv);
+        STACKS.push(stackdiv);
+        // $("div#stacks").append("<div id='stack" + i + "' class='stack-header'><h3>Stack [" + (i+1) + "]</h3><hr /><p></p></div>");
+        // STACKS.push($("div#stack" + i + " > p"));
+        // $("#debug").append("<p>creating stack " + i + "</p>");
+        debug("creating stack " + i)
     }
 
     return STACKS[which-1];
@@ -140,8 +147,13 @@ function make_item(word,pos) {
 
 
 function create_item_dom(item) {
-    var obj = $("<div></div>").addClass("stack").append($("<p></p>").append(item.words)).append(item.covered).hide();
+    var obj = $("<div></div>")
+        .addClass("stack")
+        .append($("<p></p>")
+                .append(item.words))
+        .append(item.covered).hide();
     obj.click(function () { var obj = this; toggle_selection(obj); });
+
     obj.hover(function () { $(this).removeClass("stack").addClass("highlight"); },
               function () { if (! ($(this).hasClass("selected")))
                   $(this).removeClass("highlight").addClass("stack"); }
