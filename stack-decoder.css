@@ -33,14 +33,37 @@ ul.translation {
     top: -29px;
 }
 
-ul.translation li {
+li.translation {
     border: 1px solid black;
     border-collapse: collapse;
     border-radius: 0px;
     padding: 3px;
     margin-top: -1px;
+}
+
+li.hilite {
+    background-color: yellow;
+}
+
+li.nohilite {
     background-color: #C6DEFF;
-    vertical-align: top;
+}
+
+li.illegal {
+    background-color: red;
+}
+
+/* .target { */
+/*     font-size: 14pt; */
+/*     padding: 0px; */
+/*     background-color: blue; */
+/*     color: white; */
+/*     border-radius: 0px; */
+/* } */
+
+.hilite {
+    border: 1px dotted red;
+    background-color: yellow;
 }
 
 td,th {
@@ -81,8 +104,8 @@ p.highlight {
 	border: 2px solid #CC6633;
 	width: 150px;
 	background-color: #CC6633;
-	padding:10px;
-	line-height:1.4em;
+	padding: 10px;
+	line-height: 1.4em;
 }
 
 
@@ -126,7 +149,7 @@ inherit properties properly */
     padding: 0px;
     spacing: 0px;
     background-color: #ffffff;
-    border: 1px solid white;
+    border: none;
 }
 
 .source :hover {
@@ -135,18 +158,9 @@ inherit properties properly */
     spacing: 0px;
 }
 
-p.target {
-    font-size: 14pt;
-    padding: 0px;
-    background-color: blue;
-    color: white;
-    border-radius: 0px;
+p.highlight {
+    background-color: yellow;
 }
-
-/* .target :hover { */
-/*     font-weight: bold; */
-/*     background-color: #00ffff; */
-/* } */
 
 th.small {
   font-size: 8pt;

@@ -1,24 +1,23 @@
 var CHART = new Object();
 var STACKS = Array();
 
-/* We
- */
 var table = $("<table></table>");
-
-// write out the words
+/*
+ * SOURCE LANGUAGE WORDS
+ */
 var row = $("<tr></tr>");
 for (i = 0; i < words.length; i++) {
     var word = words[i][0];
-    var label = word + i;
+    var label = "source" + i;
     func = function(index) {
         return function() {
             var element = $("#targetlist" + index);
             if (element.is(":visible")) {
                 $("#targetlist" + index).slideUp();
-                $("#" + words[index][0] + index).parent().find("p").css({border: "1px solid white"});
+                $("#source" + index).parent().find("p").css({border: "none"});
             } else {
                 $("#targetlist" + index).slideDown();
-                $("#" + words[index][0] + index).parent().find("p").css({border: "1px solid black"});
+                $("#source" + index).parent().find("p").css({border: "1px solid black"});
             }
         }
     }
@@ -34,7 +33,9 @@ for (i = 0; i < words.length; i++) {
 }
 table.append(row);
 
-// write out the translation options for each word
+/*
+ * TARGET LANGUAGE TRANSLATIONS
+ */
 row = $("<tr></tr>").attr("id", "targetwords");
 for (i = 0; i < words.length; i++) {
     // document.write("<td>");
@@ -45,15 +46,52 @@ for (i = 0; i < words.length; i++) {
 
         var item = $("<li></li>")
             .attr("id", label)
-            .addClass("target")
+            .addClass("translation nohilite")
             .text(word)
-            .click(function() { var obj = this; add_target_word(obj.id); })
+            .data('pos', i)
+            .click(function() { 
+                /* If the user clicks on the word and no other
+                 * hypotheses are selected, then we add the word to
+                 * the chart.
+                 */
+                // var num_selected = count_selected();
+                // if (num_selected == 0) {
+                    var obj = this; 
+                    add_target_word(obj.id); 
+                // }
+            })
+            .hover(function(e) {
+                /* On hovering, we highlight the word if (a) nothing
+                 * else is selected and this item is a vlid candidate
+                 * for adding to the chart or (b) one other item is
+                 * selected and this is a valid extension of that
+                 * item. */
+                var num_selected = count_selected();
+                switch(num_selected) {
+                case 0:
+                    // TODO: make sure it hasn't already been added
+                    // (or if it has, highlight that item)
+                    $(this).removeClass('nohilite').addClass('hilite');
+                    break;
+                case 1:
+                    /* only highlight if this is a valid extension of the state
+                     */
+                    var selected = $(".selected");
+                    if (selected.data('item').pos[$(this).data('pos')])
+                        $(this).removeClass('nohilite').addClass('illegal');
+                    else
+                        $(this).removeClass('nohilite').addClass('hilite');
+
+                    break;
+                }
+            },function(e) {
+                $(this).removeClass("hilite illegal").addClass('nohilite');
+            })
             .draggable({
                 cancel: "a.ui-icon",
                 revert: "invalid",
                 cursor: "move",
-            })
-            .addClass("target");
+            });
         list.append(item);
         // document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
         // document.write(p.html());
