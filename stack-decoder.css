@@ -20,6 +20,15 @@ table {
  * PARAMETERS SECTION
  */
 
+#arrow {
+    font-size: 7pt;
+}
+
+#paramtext {
+    font-size: 12pt;
+    font-weight: bold;
+}
+
 table.parameters {
     border: none;
 }

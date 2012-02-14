@@ -21,7 +21,7 @@
   <body>
     <div class="site">
       <div class="leftsidebar">
-        <h3 class="parameters">Parameters...</h3>
+        <span id="arrow">▶</span><span id="paramtext"> Parameters</span>
         <div id="parameters" style="padding: 0px; display: none">
           <table class="parameters">
             <tr>
@@ -73,15 +73,14 @@
         </div>
 
         <script type="text/javascript">
-          $("h3.parameters").click(function(e) {
-            var h3 = $("h3.parameters");
-            var div = h3.next('div');
+          $("#paramtext").click(function(e) {
+            var div = $("#paramtext").next('div');
             if (div.is(":hidden")) {
               div.slideDown();
-              // h3.text("Parameters");
+              $("#arrow").text("▼");
             } else {
               div.slideUp();
-              // h3.text("Parameters");
+              $("#arrow").text("▶");
             }});
           // ▼▶
         </script>
