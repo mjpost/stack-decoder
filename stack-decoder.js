@@ -104,21 +104,35 @@ $("div.content")
 
 function get_stack(which) {
     // make sure the stack exists
-    for (i = STACKS.length; i < which; i++) {
-        var stackdiv = $("<div></div>")
-            .attr("id", "stack" + i)
-            .addClass('stack-header')
-            .append($("<h3></h3>")
-                    .text("Stack [" + (i+1) + "]"));
-        $("div#stacks").append(stackdiv);
-        STACKS.push(stackdiv);
-        // $("div#stacks").append("<div id='stack" + i + "' class='stack-header'><h3>Stack [" + (i+1) + "]</h3><hr /><p></p></div>");
-        // STACKS.push($("div#stack" + i + " > p"));
-        // $("#debug").append("<p>creating stack " + i + "</p>");
-        debug("creating stack " + i)
-    }
+    if ($("#numstacks").val() == "one") {
+        // create the stack if it doesn't exist
+        if (STACKS.length == 0) {
+            var stackdiv = $("<div></div>")
+                .attr("id", "stack" + i)
+                .addClass('stack-header')
+                .append($("<h3></h3>")
+                        .text("Stack"))
+            $("div#stacks").append(stackdiv);
+            STACKS.push(stackdiv);
+        }
 
-    return STACKS[which-1];
+        return STACKS[0];
+    } else {
+        for (i = STACKS.length; i < which; i++) {
+            var stackdiv = $("<div></div>")
+                .attr("id", "stack" + i)
+                .addClass('stack-header')
+                .append($("<h3></h3>")
+                        .text("Stack [" + (i+1) + "]"));
+            $("div#stacks").append(stackdiv);
+            STACKS.push(stackdiv);
+            // $("div#stacks").append("<div id='stack" + i + "' class='stack-header'><h3>Stack [" + (i+1) + "]</h3><hr /><p></p></div>");
+            // STACKS.push($("div#stack" + i + " > p"));
+            // $("#debug").append("<p>creating stack " + i + "</p>");
+            debug("creating stack " + i)
+        }
+        return STACKS[which-1];
+    }
 }
 
 
@@ -154,10 +168,35 @@ function add_target_word(obj) {
     }
 }
 
+var dpmap = {
+    'none':    0,
+    'bigram':  1,
+    'trigram': 2,
+};
+
+function compute_dpstate(phrase) {
+    var histsize = dpmap[$("#dp").val()];
+
+    // debug("shortening " + phrase);
+
+    if (histsize) {
+        var words = phrase.split(' ');
+        if (words.length > histsize) {
+            phrase = "...";
+            for (i = words.length - histsize; i < words.length; i++)
+                phrase += " " + words[i];
+        }
+    }
+    
+    // debug("returning " + phrase);
+
+    return phrase;
+}
+
 function make_item(word,pos) {
     var item = new Object();
     // the words
-    item.words = "&lt;s&gt; " + word;
+    item.words = compute_dpstate("&lt;s&gt; " + word);
     // the source-language index
     item.pos = new Array();
     // coverage array
@@ -165,12 +204,15 @@ function make_item(word,pos) {
     // which stack this item will be in
     item.stack = 1;
 
+    item.backpointer = null;
+
     // coverage display
     item.covered = create_coverage_display(item.pos);    
 
+    item.signature = item.words + "-" + item.covered;
+
     // generate the DOM objects that display the item
     item.$ = create_item_dom(item);
-
     item.displayed = 0;
 
     var key = item.words + " ||| " + item.covered;
@@ -205,10 +247,18 @@ function create_item_dom(item) {
         .data('item', item)
         .hover(function () { 
             $(this).removeClass("stacknohilite").addClass("stackhilite");
+            // $('["' + item.signature + '"]').addClass("stackdphilite");
+            // debug(item.signature + " on: " + $('[signature="' + item.signature + '"]').size());
         }, function () { 
             if (! ($(this).hasClass("selected")))
                 $(this).removeClass("stackhilite").addClass("stacknohilite");
+            // $('["' + item.signature + '"]').removeClass("stacknohilite");
+            // debug(item.signature + " off: " + $('[signature="' + item.signature + '"]').size());
         });
+
+    // if (item.backpointer) {
+    //     item.backpointer.$.attr(item.signature, 1);
+    // }
 
     return obj;
 
@@ -228,10 +278,10 @@ function create_item_dom(item) {
 function extend_item(olditem,word,pos) {
     var item = new Object();
 
-    item.backpointer = [olditem, pos];
+    item.backpointer = olditem;
 
     // extend the hypothesis
-    item.words = olditem.words + " " + word;
+    item.words = compute_dpstate(olditem.words + " " + word);
 
     // copy the coverage array and extend it
     item.pos = olditem.pos.slice(0);
@@ -240,6 +290,8 @@ function extend_item(olditem,word,pos) {
 
     item.covered = create_coverage_display(item.pos);
 
+    item.signature = item.words + "-" + item.covered;
+
     // generate the DOM objects
     item.$ = create_item_dom(item);
     item.displayed = 0;
@@ -247,6 +299,8 @@ function extend_item(olditem,word,pos) {
     var key = item.words + " ||| " + item.covered;
     if (! (key in CHART))
         CHART[key] = item;
+
+    olditem.$.addClass(item.words + "-" + item.covered);
 
     return CHART[key];
 }

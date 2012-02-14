@@ -28,8 +28,9 @@
               <td>Stacks</td>
               <td>
                 <select id="numstacks">
-                  <option>one</option>
-                  <option selected>many</option>
+                  <option selected value="one">one</option>
+                  <option value="words">number of words</option>
+                  <option value="coverage">coverage vectors</option>
                 </select>
               </td>
             </tr>
@@ -47,7 +48,13 @@
             </tr>
             <tr>
               <td>Dynamic programming</td>
-              <td><button id="dp">Off</button></td>
+              <td>
+                <select id="dp">
+                  <option selected>off</option>
+                  <option>bigram</option>
+                  <option>trigram</option>
+                </select>
+              </td>p
             </tr>
             <tr>
               <td>Constraints</td>

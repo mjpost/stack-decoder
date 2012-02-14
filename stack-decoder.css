@@ -152,6 +152,11 @@ inherit properties properly */
     border: 1px solid #cccccc;
 }
 
+.stackdphilite {
+    background-color: green;
+    border: 1px solid #cccccc;
+}
+
 .source {
     font-size: 20pt;
     height: 30px;
