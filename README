@@ -1,0 +1,9 @@
+This project implements a word-based decoder for purposes of
+visualization.  It is written in Javascript and JQuery.
+
+Currently, the source-language sentence is hard-coded.  To change it,
+you can look for the line that loads "ttable.js" in stack-decoder.html
+and point it to another file.  Two available options are
+"ttable-german.js" and "ttable-spanish.js".  From these files, it
+should be easy to create other sentences.
+
