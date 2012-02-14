@@ -96,16 +96,26 @@
 
         <h3>Instructions</h3>
         <p>
-          To begin, click the header bar to create the empty
-          hypothesis.
+          To begin, click a source language word to create the empty
+          hypothesis.  Clicking on a source-language word also reveals
+          a list of translation candidates for that word.
         </p>
 
         <p>
-          Then extend hypotheses by selecting an existing one and then
-          choosing a translation.  Each chart hypothesis contains the
-          words of the hypothesis together a graphical depiction of
-          which words in that hypothesis have been translated.
+          You then build new hypotheses by selecting an existing one
+          and choosing a word to extend it with.  Each chart
+          hypothesis contains the sequence of translated words
+          together with its coverage vector (denoting which
+          source-language words have been translated).
         </p>
+
+          <p>
+            If a word is highlighted in red, that means it is not
+            available to extend the selected hypothesis.  This can be
+            due to the distortion constraints or because you are
+            trying to extend a hypothesis with a translation of a word
+            that has already been covered by that hyopthesis.
+          </p>
       </div>
 
       <div id="content">
