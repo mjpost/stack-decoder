@@ -80,14 +80,14 @@ for (i = 0; i < words.length; i++) {
                 }
             },function(e) {
                 $(this).removeClass("hilite illegal").addClass('nohilite');
-            })
-            .draggable({
-                cancel: "a.ui-icon",
-                revert: function(dropped) {
-                    return true;
-                },
-                cursor: "move",
             });
+            // .draggable({
+            //     cancel: "a.ui-icon",
+            //     revert: function(dropped) {
+            //         return true;
+            //     },
+            //     cursor: "move",
+            // });
         list.append(item);
         // document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
         // document.write(p.html());
@@ -301,7 +301,7 @@ function create_item_dom(item) {
         })
         .droppable({
             accept: ".translation",
-            activeClass: "highlight",
+            hoverClass: "highlight",
             tolerance: 'intersect',
             drop: function(event, ui) {
                 var word = ui.draggable.data('word');
