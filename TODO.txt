@@ -1,0 +1,6 @@
+- [ ] should highlight backpointer states (in varying color pairs)
+  when hovering over an item
+  - [ ] also draw links
+- [ ] add scores
+- [ ] add automation
+- [ ] add ability to dynamically reload ttables
