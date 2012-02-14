@@ -45,7 +45,7 @@ ul.translation {
     margin: 0px;
     spacing: 5px;
     list-style: none;
-    width: 100px;
+    width: 80px;
     position: relative;
     border-collapse: collapse;
     top: -24px;
@@ -179,7 +179,7 @@ inherit properties properly */
 .source {
     font-size: 20pt;
     height: 30px;
-    width: 100px;
+    width: 80px;
     padding: 0px;
     spacing: 0px;
     background-color: #ffffff;
@@ -265,7 +265,7 @@ div #content {
 
 .site #content {
     float: left;
-    width: 650px;
+    width: 550px;
 }
 
 .site .rightsidebar {
