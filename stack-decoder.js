@@ -60,7 +60,9 @@ for (i = 0; i < words.length; i++) {
             })
             .draggable({
                 cancel: "a.ui-icon",
-                revert: "invalid",
+                revert: function(dropped) {
+                    return true;
+                },
                 cursor: "move",
             });
         list.append(item);
@@ -234,7 +236,7 @@ function create_item_dom(item) {
         .droppable({
             accept: ".translation",
             activeClass: "highlight",
-            toleranace: 'pointer',
+            tolerance: 'intersect',
             drop: function(event, ui) {
                 var word = ui.draggable.data('word');
                 var pos  = ui.draggable.data('pos');
