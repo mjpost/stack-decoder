@@ -15,7 +15,7 @@
 	<script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
 
     <!-- location of t-table data -->
-    <script src="ttable.js" type="text/javascript"></script>
+    <script src="ttable-german.js" type="text/javascript"></script>
   </head>
 
   <body>
@@ -29,23 +29,24 @@
               <td>
                 <select id="numstacks">
                   <option selected value="one">one</option>
-                  <option value="words">number of words</option>
-                  <option value="coverage">coverage vectors</option>
+                  <option value="words"># words</option>
+                  <option value="coverage">coverage</option>
                 </select>
               </td>
             </tr>
-            <tr>
-              <td>Candidates</td>
-              <td>
-                <select id="numcandidates">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5+</option>
-                </select>
-              </td>
-            </tr>
+            <!-- <tr> -->
+            <!--   <td>Candidates</td> -->
+            <!--   <td> -->
+            <!--     <select id="numcandidates"> -->
+            <!--       <option>1</option> -->
+            <!--       <option>2</option> -->
+            <!--       <option>3</option> -->
+            <!--       <option>4</option> -->
+            <!--       <option selected>5</option> -->
+            <!--       <option>6+</option> -->
+            <!--     </select> -->
+            <!--   </td> -->
+            <!-- </tr> -->
             <tr>
               <td>Dynamic programming</td>
               <td>
@@ -102,35 +103,10 @@
         </p>
       </div>
 
-      <div class="content">
+      <div id="content">
         <h1>Stack decoder</h1>
-
-<!--           <script type="text/javascript"> -->
-<!--             for (i = 0; i < words.length; i++) { -->
-<!--             var hasClass = false; -->
-
-<!--             function toggle() { -->
-<!--               if (hasClass) -->
-<!--                 $("p#first").removeClass("highlight"); -->
-<!--               else  -->
-<!--                 $("p#first").addClass("highlight"); -->
-
-<!--               hasClass = ! hasClass; -->
-<!-- } -->
-
-<!--             $("p#first").click(function(){ toggle() }); -->
-<!--             $("input.highlight").click(function(){ $("p").addClass("highlight"); }); -->
-<!--             $("input.unhighlight").click(function(){ $("p").removeClass("highlight"); }); -->
-
-<!--           // Number the divs of the document, up to div#last  -->
-<!--           $("p").each(function(idx) { // Invoke for each <td>  -->
-<!--             // Create a jQuery object from the element  -->
-<!--             // And insert the index at start of it.  -->
-<!--             $(this).prepend(idx + ": ");  -->
-<!--             // Stop iterating when we reach #last -->
-<!--             if (this.id === "last") return false; }); -->
-<!--           </script> -->
       </div>
+
       <div class="rightsidebar" id="debug">
         <h3>Debugging output</h3>
         <hr />

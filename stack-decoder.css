@@ -35,7 +35,7 @@ ul.translation {
     width: 100px;
     position: relative;
     border-collapse: collapse;
-    top: 2px;
+    top: -24px;
     /* top: -29px; */
 }
 
@@ -44,6 +44,7 @@ li.translation {
     border-radius: 0px;
     padding: 3px;
     font-size: 14pt;
+    margin-top: -1px;
 }
 
 li.hilite {
@@ -164,7 +165,7 @@ inherit properties properly */
     padding: 0px;
     spacing: 0px;
     background-color: #ffffff;
-    border: none;
+    border: 1px solid white;
     float: left;
     text-align: center;
 }
@@ -244,15 +245,16 @@ div #content {
     text-align: left;
 }
 
-.site .content {
+.site #content {
     float: left;
-    width: 500px;
+    width: 650px;
 }
 
 .site .rightsidebar {
     margin-top: 50px;
     float: left;
     width: 200px;
+    margin-left: 20px;
     /* margin-left: 800px; */
 }
 

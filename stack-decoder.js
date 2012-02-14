@@ -10,7 +10,7 @@ for (i = 0; i < words.length; i++) {
         .attr("id", "targetlist" + i)
         .addClass("translation")
         .hide();
-    for (j = 1; j < words[i].length; j++) {
+    for (j = 1; j < min($("#numcandidates").val(),words[i].length); j++) {
         var word = words[i][j];
         var label = "target" + i + "-" + j;
 
@@ -70,32 +70,32 @@ for (i = 0; i < words.length; i++) {
     list.append($("<br></br>").css({"clear":"both"}));
 
     var word = words[i][0];
-    var label = "source" + i;
     func = function(index) {
         return function() {
             var element = $("#targetlist" + index);
             if (element.is(":visible")) {
                 $("#targetlist" + index).slideUp();
-                $("#source" + index).parent().find("p").css({border: "none"});
+                $("#source" + index).find('p').css({border: "1px solid white"});
             } else {
                 $("#targetlist" + index).slideDown();
-                $("#source" + index).parent().find("p").css({border: "1px solid black"});
+                $("#source" + index).find('p').css({border: "1px solid black"});
             }
         }
     }
 
+    var label = "source" + i;
     var td = $("<div></div>")
         .addClass("source")
         .attr("id",label)
-        .append(word)
-        .click(func(i))
+        .append($("<p></p>").append(word).click(func(i)))
+        // .click(func(i))
         .append(list);
     row.append(td);
     // document.write("<td><p class='source' id='" + label + "'>" + word + "</p></td>");
     // $("td#" + label).click(function() { translation_options(i); });
 }
 
-$("div.content")
+$("div#content")
     .append(row)
     .append($("<div></div>").css({"clear":"both"}))
     .append($("<div></div>").
@@ -123,11 +123,9 @@ function get_stack(which) {
                 .attr("id", "stack" + i)
                 .addClass('stack-header')
                 .append($("<h3></h3>")
-                        .text("Stack [" + (i+1) + "]"));
+                        .text("Stack (" + (i+1) + " word" + (i >= 1 ? "s" : "") + " translated)"));
             $("div#stacks").append(stackdiv);
             STACKS.push(stackdiv);
-            // $("div#stacks").append("<div id='stack" + i + "' class='stack-header'><h3>Stack [" + (i+1) + "]</h3><hr /><p></p></div>");
-            // STACKS.push($("div#stack" + i + " > p"));
             // $("#debug").append("<p>creating stack " + i + "</p>");
             debug("creating stack " + i)
         }
@@ -380,4 +378,11 @@ function count_selected() {
 
 function debug(message) {
     $("#debug > div").prepend("<p>" + message + "</p>");
+}
+
+function min(a,b) {
+    if (a < b)
+        return a;
+    else
+        return b;
 }
