@@ -1,4 +1,13 @@
+// the chart containing hypotheses
 var CHART = new Object();
+CHART.size = function() {
+    var size = -1;
+    for (var key in this)
+        size++;
+    return size;
+};
+
+// the stacks that hypotheses are placed in
 var STACKS = Array();
 
 /*
@@ -25,11 +34,8 @@ for (i = 0; i < words.length; i++) {
                  * hypotheses are selected, then we add the word to
                  * the chart.
                  */
-                // var num_selected = count_selected();
-                // if (num_selected == 0) {
-                    var obj = this; 
-                    add_target_word(obj); 
-                // }
+                var obj = this; 
+                add_target_word(obj); 
             })
             .hover(function(e) {
                 /* On hovering, we highlight the word if (a) nothing
@@ -42,7 +48,7 @@ for (i = 0; i < words.length; i++) {
                 case 0:
                     // TODO: make sure it hasn't already been added
                     // (or if it has, highlight that item)
-                    $(this).removeClass('nohilite').addClass('hilite');
+                    $(this).removeClass('nohilite').addClass('illegal');
                     break;
                 case 1:
                     /* only highlight if this is a valid extension of the state
@@ -120,25 +126,24 @@ function get_stack(which) {
 
         return STACKS[0];
     } else {
-        for (i = STACKS.length; i < which; i++) {
+        for (i = STACKS.length; i <= which; i++) {
             var stackdiv = $("<div></div>")
                 .attr("id", "stack" + i)
                 .addClass('stack-header')
                 .append($("<h3></h3>")
-                        .text("Stack (" + (i+1) + " word" + (i >= 1 ? "s" : "") + " translated)"));
+                        .text("Stack (" + i + " word" + ((i >= 1 || i == 0) ? "s" : "") + " translated)"));
             $("div#stacks").append(stackdiv);
             STACKS.push(stackdiv);
             // $("#debug").append("<p>creating stack " + i + "</p>");
             debug("creating stack " + i)
         }
-        return STACKS[which-1];
+        return STACKS[which];
     }
 }
 
 
-/* Here we add a target word based on the div element label, which has
- * the format "targetI-J", where I is the source language index and J
- * is the index into I's translations (and is ignored).
+/*
+ * Add a target word based from the JQuery object.
  */
 function add_target_word(obj) {
     var word = $(obj).data('word');
@@ -147,9 +152,9 @@ function add_target_word(obj) {
     var item;
     var selected = count_selected();
     switch(selected) {
-    case 0:
-        item = make_item(word, pos);
-        break;
+    // case 0:
+    //     item = make_item(word, pos);
+    //     break;
     case 1:
         var olditem = $(".selected").data('item');
         // debug("olditem (selected) is " + olditem.$.html());
@@ -169,10 +174,20 @@ function add_target_word(obj) {
 }
 
 var dpmap = {
+    'off':    0,
     'none':    0,
     'bigram':  1,
     'trigram': 2,
 };
+
+$(".source")
+    .click(function() {
+        var item = make_start_item();
+        if (item.displayed == 0) {
+            item.displayed = 1;
+            get_stack(item.stack).append(item.$.fadeIn());
+        }
+    });
 
 function compute_dpstate(phrase) {
     var histsize = dpmap[$("#dp").val()];
@@ -216,8 +231,39 @@ function make_item(word,pos) {
     item.displayed = 0;
 
     var key = item.words + " ||| " + item.covered;
-    if (! (key in CHART))
+    if (! (key in CHART)) {
         CHART[key] = item;
+        $("#chartsize").text(CHART.size());
+    }
+
+    return CHART[key];
+}
+
+function make_start_item() {
+    var item = new Object();
+    // the words
+    item.words = compute_dpstate("&lt;s&gt;");
+    // the source-language index
+    item.pos = new Array();
+    // which stack this item will be in
+    item.stack = 0;
+
+    item.backpointer = null;
+
+    // coverage display
+    item.covered = create_coverage_display(item.pos);    
+
+    item.signature = item.words + "-" + item.covered;
+
+    // generate the DOM objects that display the item
+    item.$ = create_item_dom(item);
+    item.displayed = 0;
+
+    var key = item.words + " ||| " + item.covered;
+    if (! (key in CHART)) {
+        CHART[key] = item;
+        $("#chartsize").text(CHART.size());
+    }
 
     return CHART[key];
 }
@@ -297,8 +343,10 @@ function extend_item(olditem,word,pos) {
     item.displayed = 0;
 
     var key = item.words + " ||| " + item.covered;
-    if (! (key in CHART))
+    if (! (key in CHART)) {
         CHART[key] = item;
+        $("#chartsize").text(CHART.size());
+    }
 
     olditem.$.addClass(item.words + "-" + item.covered);
 

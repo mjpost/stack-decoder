@@ -28,6 +28,10 @@ table.parameters td {
     text-align: left;
 }
 
+/*
+ * TRANSLATIONS ETC
+ */
+
 ul.translation {
     margin: 0px;
     spacing: 5px;
@@ -170,7 +174,7 @@ inherit properties properly */
     text-align: center;
 }
 
-p.highlight {
+.highlight {
     background-color: yellow;
 }
 

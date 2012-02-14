@@ -1,4 +1,4 @@
-var words = [ ['El','The','the'],
-              ['perro', 'dog', 'cat'],
-              ['es', 'is'],
-              ['blanco','white'] ];
+var words = [ ['Yo','I'],
+              ['tengo', 'am', 'have'],
+              ['hambre','hungry', 'hunger'],
+            ];
