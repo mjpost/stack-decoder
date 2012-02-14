@@ -163,12 +163,17 @@ inherit properties properly */
 
 .stacknohilite {
     background-color: #cccccc;
-    border: 1px solid #cccccc;
+    border: 1px dashed #cccccc;
 }
 
 .stackdphilite {
     background-color: green;
     border: 1px solid #cccccc;
+}
+
+.stackcomplete {
+    background-color: Darkorange;
+    border: 1px solid black;
 }
 
 .source {

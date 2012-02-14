@@ -7,6 +7,9 @@ CHART.size = function() {
     return size;
 };
 
+var SOS = "&lt;s&gt";
+var EOS = "&lt;/s&gt";
+
 // the stacks that hypotheses are placed in
 var STACKS = Array();
 
@@ -228,7 +231,7 @@ function compute_dpstate(phrase) {
 function make_item(word,pos) {
     var item = new Object();
     // the words
-    item.words = compute_dpstate("&lt;s&gt; " + word);
+    item.words = compute_dpstate(SOS + " " + word);
     // the source-language index
     item.pos = new Array();
     // coverage array
@@ -291,7 +294,7 @@ function make_start_item() {
 
 function create_item_dom(item) {
     var obj = $("<div></div>")
-        .addClass("stack stacknohilite")
+        .addClass("stack")
         .append($("<p></p>")
                 .append(item.words))
         .append(item.covered)
@@ -322,6 +325,12 @@ function create_item_dom(item) {
             // debug(item.signature + " off: " + $('[signature="' + item.signature + '"]').size());
         });
 
+    if (item.complete) {
+        obj.addClass("stackcomplete");
+    } else {
+        obj.addClass("stacknohilite")
+    }
+
     // if (item.backpointer) {
     //     item.backpointer.$.attr(item.signature, 1);
     // }
@@ -348,6 +357,15 @@ function extend_item(olditem,word,pos) {
 
     // extend the hypothesis
     item.words = compute_dpstate(olditem.words + " " + word);
+
+
+    // is it complete?
+    if (olditem.stack + 1 == words.length) {
+        item.words += compute_dpstate(" " + EOS);
+        item.complete = true;
+    } else {
+        item.complete = false;
+    }
 
     // copy the coverage array and extend it
     item.pos = olditem.pos.slice(0);
