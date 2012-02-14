@@ -28,9 +28,9 @@
               <td>Stacks</td>
               <td>
                 <select id="numstacks">
-                  <option selected value="one">one</option>
-                  <option value="words"># words</option>
-                  <option value="coverage">coverage</option>
+                  <option value="one">one</option>
+                  <option value="words" selected># words</option>
+                  <!-- <option value="coverage">coverage</option> -->
                 </select>
               </td>
             </tr>
@@ -58,12 +58,15 @@
               </td>p
             </tr>
             <tr>
-              <td>Constraints</td>
+              <td>Reordering Constraints</td>
               <td>
                 <select id="constraints">
-                  <option selected>none</option>
-                  <option selected>monotonic</option>
-                  <option selected>unbounded</option>
+                  <option value="0" selected>none</option>
+                  <option value="+1">monotonic</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
                 </select>
             </tr>
           </table>

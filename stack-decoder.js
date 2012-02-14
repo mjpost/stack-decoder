@@ -54,12 +54,29 @@ for (i = 0; i < words.length; i++) {
                     /* only highlight if this is a valid extension of the state
                      */
                     var selected = $(".selected");
+                    // a word is illegal if it is already covered
                     if (selected.data('item').pos[$(this).data('pos')])
                         $(this).removeClass('nohilite').addClass('illegal');
-                    else
-                        $(this).removeClass('nohilite').addClass('hilite');
-
-                    break;
+                    else {
+                        var permitted_distance = $("#constraints").val();
+                        var lastpos = selected.data('item').lastpos;
+                        var curpos = $(this).data('pos');
+                        // permitted
+                        if (permitted_distance == "0")
+                            $(this).removeClass('nohilite').addClass('hilite');
+                        else if (permitted_distance == "+1") {
+                            if (curpos == lastpos + 1)
+                                $(this).removeClass('nohilite').addClass('hilite');
+                            else 
+                                $(this).removeClass('nohilite').addClass('illegal');
+                        } else {
+                            if (abs(curpos - lastpos) <= permitted_distance) {
+                                $(this).removeClass('nohilite').addClass('hilite');
+                            } else {
+                                $(this).removeClass('nohilite').addClass('illegal');
+                            }
+                        }
+                    }
                 }
             },function(e) {
                 $(this).removeClass("hilite illegal").addClass('nohilite');
@@ -245,6 +262,9 @@ function make_start_item() {
     item.words = compute_dpstate("&lt;s&gt;");
     // the source-language index
     item.pos = new Array();
+
+    item.lastpos = -1;
+
     // which stack this item will be in
     item.stack = 0;
 
@@ -333,6 +353,7 @@ function extend_item(olditem,word,pos) {
     item.pos = olditem.pos.slice(0);
     item.pos[pos] = 1;
     item.stack = olditem.stack + 1;
+    item.lastpos = pos;
 
     item.covered = create_coverage_display(item.pos);
 
@@ -435,4 +456,10 @@ function min(a,b) {
         return a;
     else
         return b;
+}
+
+function abs(a) {
+    if (a < 0)
+        return -a;
+    return a;
 }
