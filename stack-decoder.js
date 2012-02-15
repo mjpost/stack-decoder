@@ -40,7 +40,7 @@ var FADE_SPEED = 1000;
 /*
  * Build lists of source- and target-language words.
  */
-var row = $("<div></div>").css({"height": "200px"});
+var row = $("<div></div>").attr('id', 'sourcebox');
 for (i = 0; i < WORDS.length; i++) {
     
     var word = WORDS[i][0];
@@ -56,10 +56,12 @@ for (i = 0; i < WORDS.length; i++) {
             // animate it
             if (list.is(":visible")) {
                 list.slideUp();
-                $("#source" + index).find('p').css({border: "1px solid white"});
+                $("#source" + index).find('p').css({border: "1px solid #dddddd", 
+                                                    'border-radius': '3px'});
             } else {
                 list.slideDown();
-                $("#source" + index).find('p').css({border: "1px solid black"});
+                $("#source" + index).find('p').css({border: "1px solid black",
+                                                    'border-radius': '3px'});
             }
         }
     };
@@ -174,7 +176,7 @@ function create_translations_list(i) {
             // document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
             // document.write(p.html());
         }
-        list.append($("<br></br>").css({"clear":"both"}));
+        // list.append($("<br></br>").css({"clear":"both"}));
 
         $("#source" + i).append(list);
     }

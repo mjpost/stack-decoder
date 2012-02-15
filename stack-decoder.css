@@ -29,6 +29,12 @@ table {
     font-weight: bold;
 }
 
+#parameters {
+    border-radius: 5px;
+    background-color: #dddddd;
+    padding: 5px;
+}
+
 table.parameters {
     border: none;
 }
@@ -45,15 +51,15 @@ ul.translation {
     margin: 0px;
     spacing: 5px;
     list-style: none;
-    width: 80px;
+    /* width: 80px; */
     position: relative;
     border-collapse: collapse;
+    border-radius: 3px;
+    border: 1px solid black;
     top: -24px;
-    /* top: -29px; */
 }
 
 li.translation {
-    border: 1px solid black;
     border-radius: 0px;
     padding: 3px;
     font-size: 14pt;
@@ -137,7 +143,8 @@ button.selected {
 /* } */
 
 #stacks {
-
+    margin-top: 10px;
+    float: left;
 }
 
 .stack-header {
@@ -191,16 +198,25 @@ inherit properties properly */
     border: 1px solid black;
 }
 
+#sourcebox {
+    width: 100%;
+    border-radius: 10px;
+    background-color: #dddddd;
+    padding: 5px;
+    float: left;
+}
+
 .source {
     font-size: 20pt;
-    height: 30px;
-    width: 80px;
-    padding: 0px;
-    spacing: 0px;
-    background-color: #ffffff;
-    border: 1px solid white;
+    padding: 5px;
+    background-color: #dddddd;
+    border: 1px solid #dddddd;
     float: left;
     text-align: center;
+}
+
+.source p {
+    padding: 5px;
 }
 
 .highlight {
@@ -222,33 +238,6 @@ h1, h2 {
   margin-bottom: 4pt;
   margin-top: 8pt;
 }
-
-.hidden-abstract, .unhidden-abstract {
-  text-indent: 0pt;
-  margin: 10pt;
-}
-
-.hidden-abstract { 
-  display: none; 
-}
-
-.unhidden-abstract { 
-  display: block; 
-  padding: 5pt;
-  background-color: #D8D8D8;
-}
-
-.news {
-  background-color: #CCFFFF;
-  padding: 2pt;
-}
-
-/*****************************************************************************/
-/*
-/* Home
-/*
-/*****************************************************************************/
-
 
 /*****************************************************************************/
 /*
@@ -289,7 +278,8 @@ div {
 .site #content {
     float: left;
     width: 50%;
-    padding: 0px;
+    padding: 10px;
+    spacing: 10px;
 
     /* width: 550px; */
 }
