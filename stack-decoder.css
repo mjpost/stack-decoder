@@ -269,7 +269,6 @@ div {
 }
 
 .site .leftsidebar {
-    margin-top: 50px;
     float: left;
     width: 20%;
     text-align: left;
@@ -285,7 +284,6 @@ div {
 }
 
 .site .rightsidebar {
-    margin-top: 50px;
     float: left;
     width: 20%;
     margin-left: 20px;
