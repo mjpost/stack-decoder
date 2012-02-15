@@ -241,11 +241,10 @@ $(".source")
     });
 
 function compute_dpstate(phrase) {
-    var histsize = $("#dp").val();
 
-    // debug("shortening " + phrase);
+    if ($("#dp").attr('checked')) {
+        var histsize = 1;
 
-    if (histsize) {
         var words = phrase.split(' ');
         if (words.length > histsize) {
             phrase = "...";
