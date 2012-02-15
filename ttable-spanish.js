@@ -5,3 +5,5 @@ var WORDS = [ ['El','The','the'],
               ['es', 'is'],
               ['mío', 'mine', 'my'],
             ];
+
+var BIGRAM = {};

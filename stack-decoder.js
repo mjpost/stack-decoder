@@ -30,6 +30,9 @@ var STACKS = Array();
 // lowest LM score
 var LM_FLOOR = -100;
 
+// how fast to fade chart items in and out
+var FADE_SPEED = 1000;
+
 /****************************************************************
  * INITIALIZATION CODE
  ****************************************************************/
@@ -73,12 +76,18 @@ for (i = 0; i < WORDS.length; i++) {
     // $("td#" + label).click(function() { translation_options(i); });
 }
 
-$("div#content")
-    .append(row)
-    .append($("<div></div>").css({"clear":"both"}))
-    .append($("<div></div>").
-            attr("id","stacks"));
+$("#content :first")
+    .after($("<div></div>").
+            attr("id","stacks"))
+    .after($("<div></div>").css({"clear":"both"}))
+    .after(row);
+
 // document.writeln("</tr></table></p>");
+
+
+/****************************************************************
+ * FUNCTIONS
+ ****************************************************************/
 
 /*
  * Builds the list of target-language translations of a given source
@@ -123,8 +132,8 @@ function create_translations_list(i) {
                         if (is_legal($(".selected"), $(this))) {
                             var pos = $(this).data('pos');
                             if (hypothesis.data('pos')[pos] != 1) {
-                                var item = extend_item(hypothesis, $(this));
-                                get_stack(item.data('stack')).append(item.fadeIn());
+                                extend_item(hypothesis, $(this));
+                                // get_stack(item.data('stack')).append(item.fadeIn());
                             }
                         }
                     }
@@ -140,7 +149,7 @@ function create_translations_list(i) {
                     case 0:
                         // nothing can be done if nothing is selected
                         $(this).removeClass('nohilite').addClass('illegal');
-                        debug("Select a hypothesis to extend.");
+                        message("Select a hypothesis to extend.");
                         break;
                     case 1:
                         if (is_legal($(".selected"), $(this))) {
@@ -235,11 +244,11 @@ function get_stack(which) {
                 .attr("id", "stack" + i)
                 .addClass('stack-header')
                 .append($("<h3></h3>")
-                        .text("Stack (" + i + " word" + ((i >= 1 || i == 0) ? "s" : "") + " translated)"));
+                        .text("Stack (" + i + ")"));
             $("div#stacks").append(stackdiv);
             STACKS.push(stackdiv);
             // $("#debug").append("<p>creating stack " + i + "</p>");
-            debug("creating stack " + i)
+            // debug("creating stack " + i)
         }
         return STACKS[which];
     }
@@ -285,8 +294,10 @@ function make_start_item() {
         $("#chartsize").text(CHART.size());
 
         // display it
-        if (! item.is(':visible'))
-            get_stack(item.data('stack')).append(item.fadeIn());
+        if (! item.is(':visible')) {
+            var stack = get_stack(item.data('stack'));
+            stack.append(item.fadeIn());
+        }
     }
 
     return CHART[key];
@@ -317,18 +328,17 @@ function make_item(worditem, olditem) {
     obj.data('pos',   olditem ? olditem.data('pos').slice(0) : new Array());
     if (pos != -1)
         obj.data('pos')[pos] = 1;
+    obj.data('covered', create_coverage_display(obj.data('pos')));
+    obj.data('key', obj.data('words') + " ||| " + obj.data('covered'));
     obj.data('lastpos', -1);
     obj.data('stack', olditem ? (olditem.data('stack') + 1) : 0);
     obj.data('backpointer', olditem ? olditem : null);
     obj.data('word', worditem);
-    obj.data('covered', create_coverage_display(obj.data('pos')));
-    obj.data('key', obj.data('words') + " ||| " + obj.data('covered'));
     obj.attr('id', id(obj.data('key')));
 
     // scoring
     var score = worditem.data('score');
     if (olditem) {
-        debug("SCORE old " + olditem.data('score'));
         score += olditem.data('score');
         score += bigram_score(olditem.data('words'), worditem.data('word'));
     }
@@ -360,8 +370,8 @@ function make_item(worditem, olditem) {
             hoverClass: "highlight",
             tolerance: 'intersect',
             drop: function(event, ui) {
-                var item = extend_item($(this), ui.draggable);
-                get_stack(item.data('stack')).append(item.fadeIn());
+                extend_item($(this), ui.draggable);
+                // get_stack(item.data('stack')).append(item.fadeIn());
             },
         })
         .hover(function () { 
@@ -386,19 +396,6 @@ function make_item(worditem, olditem) {
         obj.addClass("stacknohilite")
     }
 
-
-    // mark the backpointer with this item's class id, so that we can highlight it
-    if (obj.data('backpointer') != null) {
-        // add this item's class to the hypothesis
-        obj.data('backpointer').addClass(obj.attr('id'));
-        // add this item's class to the word
-        obj.data('word').addClass(obj.attr('id'));
-    }
-
-    // if (item.backpointer) {
-    //     item.backpointer.$.attr(item.signature, 1);
-    // }
-
     return obj;
 
         // over: function(event, ui) {
@@ -417,16 +414,82 @@ function make_item(worditem, olditem) {
 function extend_item(olditem,worditem) {
     var item = make_item(worditem, olditem);
 
+    // If the item is not in the chart or has a better score, add it
     var key = item.data('key');
-    if (! (key in CHART)) {
-        // create the chart entry
+    if (! (key in CHART) || CHART[key].data('score') < item.data('score')) {
+        // if there is an old item, delete it
+        if (key in CHART) {
+            var olditem = CHART[key];
+            // remove it
+            olditem.fadeOut(FADE_SPEED);
+            // remove anything tagged with it
+            var id = olditem.attr('id');
+            $("." + id).removeClass(id);
+        }
+
+        // record the current item
         CHART[key] = item;
+
+        // mark the backpointer items with this item's class id, so
+        // that we can highlight them
+        item.data('backpointer').addClass(item.attr('id'));
+            // add this item's class to the word
+        item.data('word').addClass(item.attr('id'));
 
         // update the chart size display
         $("#chartsize").text(CHART.size());
 
-        // display it (TODO?)
+        if (! item.is(":visible")) {
+            var stack = get_stack(item.data('stack'));
+            // if the stack is empty, just append it (empty means that
+            // it just has the title element, so it's of size 1)
+            var num_children = stack.children().size();
+            if (num_children == 1) {
+                stack.append(item.fadeIn(FADE_SPEED));
+            } else {
+                // otherwise, insert it into the appropriate position on the stack
+                var itemscore = item.data('score');
+                stack.children().each(function(index) {
+                    // skip the first element (the stack title)
+                    if (index == 0)
+                        return true;
+
+                    // If we find an element we're greater than,
+                    // insert before it.  This maintains a sorted list
+                    // so long as the long was sorted before
+                    var score = $(this).data('score');
+                    if (itemscore > score) {
+                        $(this).before(item.fadeIn(FADE_SPEED));
+
+                        // returning false exits the each()
+                        return false;
+                    } else if (index == num_children - 1) {
+                        // end of the list
+                        $(this).after(item.fadeIn(FADE_SPEED));
+                    } else {
+                        return true;
+                    }
+                });
+
+                // remove entries that fall outside the beam
+                var stacksize = $("#stacksize").val();
+                stack.children().each(function(index) {
+                    // skip the first element (the stack title)
+                    if (index > stacksize) {
+                        log("Removing stack " + item.data('stack') + " item " + index);
+                        var key = $(this).data('key');
+                        $(this).fadeOut(FADE_SPEED);
+                        delete CHART[key];
+                    }
+                });
+            }
+        }
+    } else {
+        // add the item only to remove it
+        CHART[key].after(item.fadeIn(FADE_SPEED).addClass('X').text('X').fadeOut(FADE_SPEED));
     }
+
+    
 
     return CHART[key];
 }
@@ -504,6 +567,10 @@ function count_selected() {
     return num;
 }
 
+function log(message) {
+    $("#debug > div").prepend("<p>" + message + "</p>");
+}
+
 function debug(message) {
     $("#debug > div").prepend("<p>" + message + "</p>");
 }
@@ -524,11 +591,17 @@ function abs(a) {
 function bigram_score(history, word) {
     var oldword = history.split(' ').pop();
 
-    if (oldword in BIGRAM) {
-        if (word in BIGRAM[oldword]) {
-            return BIGRAM[oldword][word];
+    if (BIGRAM != undefined) {
+        if (oldword in BIGRAM) {
+            if (word in BIGRAM[oldword]) {
+                return BIGRAM[oldword][word];
+            }
         }
     }
 
     return LM_FLOOR;
+}
+
+function message(text) {
+    $("#message").text(text);
 }

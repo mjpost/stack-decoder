@@ -5,3 +5,5 @@ var WORDS = [ ['er','he','it'],
               ['nach','after','to','in'],
               ['hause','house','home','chamber'],
             ];
+
+var BIGRAM = {};

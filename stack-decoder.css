@@ -135,8 +135,12 @@ button.selected {
 /*     padding: 5px; */
 /* } */
 
+#stacks {
+
+}
+
 .stack-header {
-    clear: both;
+    /* clear: both; */
 
     /* this is really important -- without it, children don't seem to
 inherit properties properly */
@@ -144,8 +148,10 @@ inherit properties properly */
     
     background-color: #eeeeee;
     border-radius: 15px;
-    padding: 10px;
+    padding: 5px;
     margin-bottom: 5px;
+    margin-left: 5px;
+    float: left;
 }
 
 .stack {
@@ -169,7 +175,14 @@ inherit properties properly */
 
 .dp-hilite {
     /* background-color: DarkKhaki; */
-    border: 3px dashed black;
+    border: 1px dashed red;
+}
+
+.X {
+    border: 5px solid red;
+    background-color: red;
+    color: white;
+    font-size: 24pt;
 }
 
 .stackcomplete {
@@ -247,8 +260,20 @@ div {
     /* padding: 20px; */
 }
 
-div #content {
+#content {
     padding: 0px;
+}
+
+#instructions {
+    clear: both;
+}
+
+#message {
+    border-radius: 5px;
+    background-color: #dddddd;
+    padding: 5px;
+    margin-top: 5px;
+    margin-right: 10px;
 }
 
 .site {

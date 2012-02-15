@@ -1,6 +1,10 @@
-- [ ] should highlight backpointer states (in varying color pairs)
+- [X] should highlight backpointer states (in varying color pairs)
   when hovering over an item
   - [ ] also draw links
-- [ ] add scores
+- [X] add scores
 - [ ] add automation
 - [ ] add ability to dynamically reload ttables
+- [ ] hypotheses popped 
+- [ ] script to build language model for dataset
+- [ ] reformat header and tape to look nicer
+- [ ] no fixed-width translation items

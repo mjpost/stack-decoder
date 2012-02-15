@@ -65,6 +65,11 @@
                   <option value="4">4</option>
                 </select>
             </tr>
+            <tr>
+              <td>Stack size</td>
+              <td>
+                <input id="stacksize" type="text" size="2" value="10"></input>
+              </td>
           </table>
         </div>
 
@@ -90,20 +95,31 @@
 
         <br/>
 
-        <h3>Instructions</h3>
-        <p>
-          To begin, click a source language word to create the empty
-          hypothesis.  Clicking on a source-language word also reveals
-          a list of translation candidates for that word.
-        </p>
+        <h3>Message</h3>
+        <div id="message">
+          Translation system ready.
+        </div>  
 
-        <p>
-          You then build new hypotheses by selecting an existing one
-          and choosing a word to extend it with.  Each chart
-          hypothesis contains the sequence of translated words
-          together with its coverage vector (denoting which
-          source-language words have been translated).
-        </p>
+      </div>
+
+      <div id="content">
+        <h1>Stack decoder</h1>
+
+        <div id="instructions">
+          <h3>Instructions</h3>
+          <p>
+            To begin, click a source language word to create the empty
+            hypothesis.  Clicking on a source-language word also reveals
+            a list of translation candidates for that word.
+          </p>
+
+          <p>
+            You then build new hypotheses by selecting an existing one
+            and choosing a word to extend it with.  Each chart
+            hypothesis contains the sequence of translated words
+            together with its coverage vector (denoting which
+            source-language words have been translated).
+          </p>
 
           <p>
             If a word is highlighted in red, that means it is not
@@ -112,10 +128,7 @@
             trying to extend a hypothesis with a translation of a word
             that has already been covered by that hyopthesis.
           </p>
-      </div>
-
-      <div id="content">
-        <h1>Stack decoder</h1>
+        </div>
       </div>
 
       <div class="rightsidebar" id="debug">
