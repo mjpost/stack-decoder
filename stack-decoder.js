@@ -103,6 +103,7 @@ function create_translations_list(i) {
                 .text(word)
                 .data('word', word)
                 .data('pos', i)
+                .data('itemno', j)
                 .click(function() { 
                     /* Use the word to extend a hypothesis if one is
                      * selected.
@@ -110,10 +111,9 @@ function create_translations_list(i) {
                     if (count_selected() == 1) {
                         var hypothesis = $(".selected");
                         if (is_legal($(".selected"), $(this))) {
-                            var word = $(this).data('word');
                             var pos = $(this).data('pos');
                             if (hypothesis.data('pos')[pos] != 1) {
-                                var item = extend_item(hypothesis, word, pos);
+                                var item = extend_item(hypothesis, $(this));
                                 get_stack(item.data('stack')).append(item.fadeIn());
                             }
                         }
@@ -260,20 +260,23 @@ function compute_dpstate(phrase) {
 }
 
 function make_start_item() {
-    var item = make_item(SOS);
+    var empty_word_item = $("<div></div>")
+        .data('word', SOS)
+        .data('pos', -1);
+
+    var item = make_item(empty_word_item);
 
     var key = item.data('key');
     if (! (key in CHART)) {
         // create the chart entry
         CHART[key] = item;
 
-        // increment the chart size
+        // update the chart size display
         $("#chartsize").text(CHART.size());
 
         // display it
         if (! item.is(':visible'))
             get_stack(item.data('stack')).append(item.fadeIn());
-
     }
 
     return CHART[key];
@@ -290,21 +293,24 @@ function id(key) {
         IDS[key] = "cell" + IDS.size();
     }
 
-    debug("IDS[" + key + "] = " + IDS[key]);
     return IDS[key];
 }
 
-function make_item(words, pos, olditem) {
+function make_item(worditem, olditem) {
     var obj = $("<div></div>")
         .addClass("stack");
 
+    var words = (olditem ? (olditem.data('words') + " ") : "") + worditem.data('word');
+    var pos   = worditem.data('pos');
+
     obj.data('words', compute_dpstate(words));
     obj.data('pos',   olditem ? olditem.data('pos').slice(0) : new Array());
-    if (pos != undefined)
+    if (pos != -1)
         obj.data('pos')[pos] = 1;
     obj.data('lastpos', -1);
     obj.data('stack', olditem ? (olditem.data('stack') + 1) : 0);
     obj.data('backpointer', olditem ? olditem : null);
+    obj.data('word', worditem);
     obj.data('covered', create_coverage_display(obj.data('pos')));
     obj.data('key', obj.data('words') + " ||| " + obj.data('covered'));
     obj.attr('id', id(obj.data('key')));
@@ -332,27 +338,39 @@ function make_item(words, pos, olditem) {
             hoverClass: "highlight",
             tolerance: 'intersect',
             drop: function(event, ui) {
-                var word = ui.draggable.data('word');
-                var pos  = ui.draggable.data('pos');
-                var item = extend_item($(this), word, pos);
+                var item = extend_item($(this), ui.draggable);
                 get_stack(item.data('stack')).append(item.fadeIn());
             },
         })
         .hover(function () { 
             $(this).removeClass("stacknohilite").addClass("stackhilite");
-            // $('["' + item.signature + '"]').addClass("stackdphilite");
-            // debug(item.signature + " on: " + $('[signature="' + item.signature + '"]').size());
+            
+            // highlight backpointers
+            $("." + $(this).attr('id')).addClass("dp-hilite");
         }, function () { 
             if (! ($(this).hasClass("selected")))
                 $(this).removeClass("stackhilite").addClass("stacknohilite");
+
+            // un-hilite DP backpointers
+            $("." + $(this).attr('id')).removeClass('dp-hilite');
+            // restore hilites to selected items
+            // $(".selected").removeClass('stacknohilite').addClass('stackhilite');
             // $('["' + item.signature + '"]').removeClass("stacknohilite");
-            // debug(item.signature + " off: " + $('[signature="' + item.signature + '"]').size());
         });
 
     if (obj.data('complete')) {
         obj.addClass("stackcomplete");
     } else {
         obj.addClass("stacknohilite")
+    }
+
+
+    // mark the backpointer with this item's class id, so that we can highlight it
+    if (obj.data('backpointer') != null) {
+        // add this item's class to the hypothesis
+        obj.data('backpointer').addClass(obj.attr('id'));
+        // add this item's class to the word
+        obj.data('word').addClass(obj.attr('id'));
     }
 
     // if (item.backpointer) {
@@ -374,15 +392,18 @@ function make_item(words, pos, olditem) {
  * Takes an existing item and a new word and creates a new item that
  * also covers that word.
  */
-function extend_item(olditem,word,pos) {
-    var words = olditem.data('words') + " " + word;
-
-    var item = make_item(words, pos, olditem);
+function extend_item(olditem,worditem) {
+    var item = make_item(worditem, olditem);
 
     var key = item.data('key');
     if (! (key in CHART)) {
+        // create the chart entry
         CHART[key] = item;
+
+        // update the chart size display
         $("#chartsize").text(CHART.size());
+
+        // display it (TODO?)
     }
 
     return CHART[key];

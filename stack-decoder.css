@@ -166,9 +166,9 @@ inherit properties properly */
     border: 1px dashed #cccccc;
 }
 
-.stackdphilite {
-    background-color: green;
-    border: 1px solid #cccccc;
+.dp-hilite {
+    /* background-color: DarkKhaki; */
+    border: 3px dashed black;
 }
 
 .stackcomplete {
