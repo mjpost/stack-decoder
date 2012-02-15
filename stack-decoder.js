@@ -27,6 +27,8 @@ var EOS = "&lt;/s&gt";
 // the stacks that hypotheses are placed in
 var STACKS = Array();
 
+// lowest LM score
+var LM_FLOOR = -100;
 
 /****************************************************************
  * INITIALIZATION CODE
@@ -94,7 +96,14 @@ function create_translations_list(i) {
 
         var num_candidates = min($("#numcandidates").val(), WORDS[i].length - 1);
         for (j = 1; j <= num_candidates; j++) {
-            var word = WORDS[i][j];
+            var word, score;
+            if (WORDS[i][j] instanceof Array) {
+                word = WORDS[i][j][0];
+                score = WORDS[i][j][1];
+            } else {
+                word = WORDS[i][j];
+                score = 0;
+            }
             var label = "target" + i + "-" + j;
 
             var item = $("<li></li>")
@@ -103,6 +112,7 @@ function create_translations_list(i) {
                 .text(word)
                 .data('word', word)
                 .data('pos', i)
+                .data('score', score)
                 .data('itemno', j)
                 .click(function() { 
                     /* Use the word to extend a hypothesis if one is
@@ -261,7 +271,8 @@ function compute_dpstate(phrase) {
 function make_start_item() {
     var empty_word_item = $("<div></div>")
         .data('word', SOS)
-        .data('pos', -1);
+        .data('pos', -1)
+        .data('score', 0);
 
     var item = make_item(empty_word_item);
 
@@ -314,19 +325,31 @@ function make_item(worditem, olditem) {
     obj.data('key', obj.data('words') + " ||| " + obj.data('covered'));
     obj.attr('id', id(obj.data('key')));
 
+    // scoring
+    var score = worditem.data('score');
+    if (olditem) {
+        debug("SCORE old " + olditem.data('score'));
+        score += olditem.data('score');
+        score += bigram_score(olditem.data('words'), worditem.data('word'));
+    }
+    obj.data('score', score);
+
     // debug('make_item(' + words + ',' + pos + ')');
     // debug("obj stack = " + obj.data('stack') + " wordslen = " + WORDS.length);
 
     // check if the item is complete, and if so, extend it
     if (obj.data('stack') == WORDS.length) {
         obj.data('words', obj.data('words') + " " + EOS);
+        obj.data('score', obj.data('score') + bigram_score(obj.data('words'), EOS));
         obj.data('complete', true);
     } else {
         obj.data('complete', false);
     }
 
-    obj.append($("<p></p>")
-                .append(obj.data('words')))
+    obj.append(obj.data('words'))
+        .append($("<br></br>"))
+        .append(obj.data('score'))
+        .append($("<br></br>"))
         .append(obj.data('covered'))
         .hide()
         .click(function () { 
@@ -496,4 +519,16 @@ function abs(a) {
     if (a < 0)
         return -a;
     return a;
+}
+
+function bigram_score(history, word) {
+    var oldword = history.split(' ').pop();
+
+    if (oldword in BIGRAM) {
+        if (word in BIGRAM[oldword]) {
+            return BIGRAM[oldword][word];
+        }
+    }
+
+    return LM_FLOOR;
 }

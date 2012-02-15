@@ -154,6 +154,7 @@ inherit properties properly */
     font-size: 10pt;
     border-radius: 15px;
     float: left;
+    text-align: center;
 }
 
 .stackhilite {
