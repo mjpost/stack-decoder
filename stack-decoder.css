@@ -276,7 +276,7 @@ div {
 
 .site #content {
     float: left;
-    width: 50%;
+    width: 65%;
     padding: 10px;
     spacing: 10px;
 
@@ -285,7 +285,7 @@ div {
 
 .site .rightsidebar {
     float: left;
-    width: 20%;
+    width: 10%;
     margin-left: 20px;
     /* margin-left: 800px; */
 }
