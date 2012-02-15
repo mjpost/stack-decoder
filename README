@@ -1,4 +1,4 @@
-This project implements a word-based decoder for purposes of
+This project implements a word-based stack decoder for purposes of
 visualization.  It is written in Javascript and JQuery.
 
 Currently, the source-language sentence is hard-coded.  To change it,

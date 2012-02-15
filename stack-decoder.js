@@ -1,3 +1,7 @@
+/****************************************************************
+ * VARIABLES
+ ****************************************************************/
+
 // the chart containing hypotheses
 var CHART = new Object();
 CHART.size = function() {
@@ -7,117 +11,52 @@ CHART.size = function() {
     return size;
 };
 
+// start- and end-of-sentence
 var SOS = "&lt;s&gt";
 var EOS = "&lt;/s&gt";
 
 // the stacks that hypotheses are placed in
 var STACKS = Array();
 
+
+/****************************************************************
+ * INITIALIZATION CODE
+ ****************************************************************/
+
 /*
  * Build lists of source- and target-language words.
  */
 var row = $("<div></div>").css({"height": "200px"});
 for (i = 0; i < words.length; i++) {
-    var list = $("<ul></ul>")
-        .attr("id", "targetlist" + i)
-        .addClass("translation")
-        .hide();
-    for (j = 1; j < min($("#numcandidates").val(),words[i].length); j++) {
-        var word = words[i][j];
-        var label = "target" + i + "-" + j;
-
-        var item = $("<li></li>")
-            .attr("id", label)
-            .addClass("translation nohilite")
-            .text(word)
-            .data('word', word)
-            .data('pos', i)
-            .click(function() { 
-                /* If the user clicks on the word and no other
-                 * hypotheses are selected, then we add the word to
-                 * the chart.
-                 */
-                var obj = this; 
-                add_target_word(obj); 
-            })
-            .hover(function(e) {
-                /* On hovering, we highlight the word if (a) nothing
-                 * else is selected and this item is a vlid candidate
-                 * for adding to the chart or (b) one other item is
-                 * selected and this is a valid extension of that
-                 * item. */
-                var num_selected = count_selected();
-                switch(num_selected) {
-                case 0:
-                    // TODO: make sure it hasn't already been added
-                    // (or if it has, highlight that item)
-                    $(this).removeClass('nohilite').addClass('illegal');
-                    break;
-                case 1:
-                    /* only highlight if this is a valid extension of the state
-                     */
-                    var selected = $(".selected");
-                    // a word is illegal if it is already covered
-                    if (selected.data('item').pos[$(this).data('pos')])
-                        $(this).removeClass('nohilite').addClass('illegal');
-                    else {
-                        var permitted_distance = $("#constraints").val();
-                        var lastpos = selected.data('item').lastpos;
-                        var curpos = $(this).data('pos');
-                        // permitted
-                        if (permitted_distance == "0")
-                            $(this).removeClass('nohilite').addClass('hilite');
-                        else if (permitted_distance == "+1") {
-                            if (curpos == lastpos + 1)
-                                $(this).removeClass('nohilite').addClass('hilite');
-                            else 
-                                $(this).removeClass('nohilite').addClass('illegal');
-                        } else {
-                            if (abs(curpos - lastpos) <= permitted_distance) {
-                                $(this).removeClass('nohilite').addClass('hilite');
-                            } else {
-                                $(this).removeClass('nohilite').addClass('illegal');
-                            }
-                        }
-                    }
-                }
-            },function(e) {
-                $(this).removeClass("hilite illegal").addClass('nohilite');
-            });
-            // .draggable({
-            //     cancel: "a.ui-icon",
-            //     revert: function(dropped) {
-            //         return true;
-            //     },
-            //     cursor: "move",
-            // });
-        list.append(item);
-        // document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
-        // document.write(p.html());
-    }
-    list.append($("<br></br>").css({"clear":"both"}));
-
+    
     var word = words[i][0];
-    func = function(index) {
+
+    // This function creates the list of translations when a source
+    // word is clicked.  It has to be a separate function like this
+    // due to Javascripts lexical binding.
+    var clickfunc = function(index) {
         return function() {
-            var element = $("#targetlist" + index);
-            if (element.is(":visible")) {
-                $("#targetlist" + index).slideUp();
+            // make sure the list is created
+            var list = create_translations_list(index);
+
+            // animate it
+            if (list.is(":visible")) {
+                list.slideUp();
                 $("#source" + index).find('p').css({border: "1px solid white"});
             } else {
-                $("#targetlist" + index).slideDown();
+                list.slideDown();
                 $("#source" + index).find('p').css({border: "1px solid black"});
             }
         }
-    }
+    };
 
     var label = "source" + i;
     var td = $("<div></div>")
         .addClass("source")
         .attr("id",label)
-        .append($("<p></p>").append(word).click(func(i)))
-        // .click(func(i))
-        .append(list);
+        .append($("<p></p>")
+                .append(word)
+                .click(clickfunc(i)));
     row.append(td);
     // document.write("<td><p class='source' id='" + label + "'>" + word + "</p></td>");
     // $("td#" + label).click(function() { translation_options(i); });
@@ -130,8 +69,134 @@ $("div#content")
             attr("id","stacks"));
 // document.writeln("</tr></table></p>");
 
+/*
+ * Builds the list of target-language translations of a given source
+ * word, creating it if necessary, and inserts it into the source word div.
+ */
+function create_translations_list(i) {
+    var id = "targetlist" + i;
+
+    var list = $("#" + id);
+    if (list.size() == 0) {
+        list = $("<ul></ul>")
+            .attr("id", "targetlist" + i)
+            .addClass("translation")
+            .hide();
+
+        var num_candidates = min($("#numcandidates").val(), words[i].length - 1);
+        for (j = 1; j <= num_candidates; j++) {
+            var word = words[i][j];
+            var label = "target" + i + "-" + j;
+
+            var item = $("<li></li>")
+                .attr("id", label)
+                .addClass("translation nohilite")
+                .text(word)
+                .data('word', word)
+                .data('pos', i)
+                .click(function() { 
+                    /* Use the word to extend a hypothesis if one is
+                     * selected.
+                     */
+                    if (count_selected() == 1) {
+                        var hypothesis = $(".selected").data('item');
+                        if (is_legal($(".selected"), $(this))) {
+                            var word = $(this).data('word');
+                            var pos = $(this).data('pos');
+                            if (hypothesis.pos[pos] != 1) {
+                                var item = extend_item(hypothesis, word, pos);
+                                get_stack(item.stack).append(item.$.fadeIn());
+                            }
+                        }
+                    }
+                })
+                .hover(function(e) {
+                    /* On hovering, we highlight the word if one other
+                     * item is selected and this word is a valid
+                     * extension of that hypothesis (according to
+                     * various constraints). 
+                     */
+                    var num_selected = count_selected();
+                    switch(num_selected) {
+                    case 0:
+                        // nothing can be done if nothing is selected
+                        $(this).removeClass('nohilite').addClass('illegal');
+                        debug("Select a hypothesis to extend.");
+                        break;
+                    case 1:
+                        if (is_legal($(".selected"),$(this))) {
+                            $(this).removeClass('nohilite').addClass('hilite');
+                        } else {
+                            $(this).removeClass('nohilite').addClass('illegal');
+                        }
+
+                    }
+                },function(e) {
+                    $(this).removeClass("hilite illegal").addClass('nohilite');
+                });
+            // .draggable({
+            //     cancel: "a.ui-icon",
+            //     revert: function(dropped) {
+            //         return true;
+            //     },
+            //     cursor: "move",
+            // });
+            list.append(item);
+            // document.writeln("<p class='target' id='" + label + "'>" + word + "</p>");
+            // document.write(p.html());
+        }
+        list.append($("<br></br>").css({"clear":"both"}));
+
+        $("#source" + i).append(list);
+    }
+
+    return list;
+}
+
+/*
+ * Takes two JQuery objects representing a hypothesis and a word, and
+ * return true if the extension is legal under the current set of
+ * constraints.
+ */
+
+function is_legal(hypothesis, word) {
+    // only highlight if this is a valid extension of that hyp.
+    // a word is illegal if it is already covered
+    if (hypothesis.data('item').pos[word.data('pos')])
+        return false;
+    else {
+        var permitted_distance = $("#constraints").val();
+        var lastpos = hypothesis.data('item').lastpos;
+        var curpos = word.data('pos');
+        // permitted
+        if (permitted_distance == "0")
+            return true;
+        else if (permitted_distance == "+1") {
+            if (curpos == lastpos + 1)
+                return true;
+            else 
+                return false;
+        } else {
+            // if we're extending the empty hypothesis, or the
+            // distance is within the permitted distance, we can
+            // extend
+            if (lastpos == -1 || (abs(curpos - lastpos) <= permitted_distance) ){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+}
+
+
+/*
+ * Returns the requested stack, adding it if it doesn't already exist.
+ * Handles different stack scenarios (single, word-based,
+ * coverage-based).
+ */
 function get_stack(which) {
-    // make sure the stack exists
+    // If we're doing just one stack, make sure it exists and return it
     if ($("#numstacks").val() == "one") {
         // create the stack if it doesn't exist
         if (STACKS.length == 0) {
@@ -158,38 +223,6 @@ function get_stack(which) {
             debug("creating stack " + i)
         }
         return STACKS[which];
-    }
-}
-
-
-/*
- * Add a target word based from the JQuery object.
- */
-function add_target_word(obj) {
-    var word = $(obj).data('word');
-    var pos  = $(obj).data('pos');
-    
-    var item;
-    var selected = count_selected();
-    switch(selected) {
-    // case 0:
-    //     item = make_item(word, pos);
-    //     break;
-    case 1:
-        var olditem = $(".selected").data('item');
-        // debug("olditem (selected) is " + olditem.$.html());
-        if (olditem.pos[pos] != 1)
-            item = extend_item(olditem, word, pos);
-        // else
-        //     debug("word already covered");
-        break;
-    default:
-        break;
-    }
-
-    if (item != null && item.displayed == 0) {
-        item.displayed = 1;
-        get_stack(item.stack).append(item.$.fadeIn());
     }
 }
 
