@@ -261,37 +261,6 @@ function compute_dpstate(phrase) {
     return phrase;
 }
 
-function make_item(word,pos) {
-    var item = new Object();
-    // the words
-    item.words = compute_dpstate(SOS + " " + word);
-    // the source-language index
-    item.pos = new Array();
-    // coverage array
-    item.pos[pos] = 1;          
-    // which stack this item will be in
-    item.stack = 1;
-
-    item.backpointer = null;
-
-    // coverage display
-    item.covered = create_coverage_display(item.pos);    
-
-    item.signature = item.words + "-" + item.covered;
-
-    // generate the DOM objects that display the item
-    item.$ = create_item_dom(item);
-    item.displayed = 0;
-
-    var key = item.words + " ||| " + item.covered;
-    if (! (key in CHART)) {
-        CHART[key] = item;
-        $("#chartsize").text(CHART.size());
-    }
-
-    return CHART[key];
-}
-
 function make_start_item() {
     var item = new Object();
     // the words
