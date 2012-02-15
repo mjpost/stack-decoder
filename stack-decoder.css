@@ -92,6 +92,7 @@ h1 {
     font-weight: bold;
     color: white;
     padding: 5px;
+    text-align: center;
 }
 
 a:link.parameters {
@@ -260,10 +261,6 @@ div {
     /* padding: 20px; */
 }
 
-#content {
-    padding: 0px;
-}
-
 #instructions {
     clear: both;
 }
@@ -285,19 +282,22 @@ div {
 .site .leftsidebar {
     margin-top: 50px;
     float: left;
-    width: 180px;
+    width: 20%;
     text-align: left;
 }
 
 .site #content {
     float: left;
-    width: 550px;
+    width: 50%;
+    padding: 0px;
+
+    /* width: 550px; */
 }
 
 .site .rightsidebar {
     margin-top: 50px;
     float: left;
-    width: 200px;
+    width: 20%;
     margin-left: 20px;
     /* margin-left: 800px; */
 }

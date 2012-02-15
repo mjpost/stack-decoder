@@ -77,10 +77,11 @@ for (i = 0; i < WORDS.length; i++) {
 }
 
 $("#content :first")
-    .after($("<div></div>").
+    .before(row)
+    .before($("<div></div>").css({"clear":"both"}))
+    .before($("<div></div>").
             attr("id","stacks"))
-    .after($("<div></div>").css({"clear":"both"}))
-    .after(row);
+;
 
 // document.writeln("</tr></table></p>");
 
