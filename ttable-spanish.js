@@ -1,4 +1,4 @@
-var words = [ ['El','The','the'],
+var WORDS = [ ['El','The','the'],
               ['perro', 'dog', 'hound', 'mutt'],
               ['blanco','white', 'target'],
               ['no', 'no', 'not'],

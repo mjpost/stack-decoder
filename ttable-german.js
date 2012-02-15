@@ -1,4 +1,4 @@
-var words = [ ['er','he','it'],
+var WORDS = [ ['er','he','it'],
               ['geht', 'is', 'are', 'goes', 'go'],
               ['ja','yes','is',','],
               ['nicht', 'not'],

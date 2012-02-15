@@ -11,6 +11,15 @@ CHART.size = function() {
     return size;
 };
 
+// this maps DP state signatures to valid CSS element IDS
+var IDS = new Object();
+IDS.size = function() {
+    var size = -1;
+    for (var key in this)
+        size++;
+    return size;
+}
+
 // start- and end-of-sentence
 var SOS = "&lt;s&gt";
 var EOS = "&lt;/s&gt";
@@ -27,9 +36,9 @@ var STACKS = Array();
  * Build lists of source- and target-language words.
  */
 var row = $("<div></div>").css({"height": "200px"});
-for (i = 0; i < words.length; i++) {
+for (i = 0; i < WORDS.length; i++) {
     
-    var word = words[i][0];
+    var word = WORDS[i][0];
 
     // This function creates the list of translations when a source
     // word is clicked.  It has to be a separate function like this
@@ -83,9 +92,9 @@ function create_translations_list(i) {
             .addClass("translation")
             .hide();
 
-        var num_candidates = min($("#numcandidates").val(), words[i].length - 1);
+        var num_candidates = min($("#numcandidates").val(), WORDS[i].length - 1);
         for (j = 1; j <= num_candidates; j++) {
-            var word = words[i][j];
+            var word = WORDS[i][j];
             var label = "target" + i + "-" + j;
 
             var item = $("<li></li>")
@@ -99,13 +108,13 @@ function create_translations_list(i) {
                      * selected.
                      */
                     if (count_selected() == 1) {
-                        var hypothesis = $(".selected").data('item');
+                        var hypothesis = $(".selected");
                         if (is_legal($(".selected"), $(this))) {
                             var word = $(this).data('word');
                             var pos = $(this).data('pos');
-                            if (hypothesis.pos[pos] != 1) {
+                            if (hypothesis.data('pos')[pos] != 1) {
                                 var item = extend_item(hypothesis, word, pos);
-                                get_stack(item.stack).append(item.$.fadeIn());
+                                get_stack(item.data('stack')).append(item.fadeIn());
                             }
                         }
                     }
@@ -124,7 +133,7 @@ function create_translations_list(i) {
                         debug("Select a hypothesis to extend.");
                         break;
                     case 1:
-                        if (is_legal($(".selected"),$(this))) {
+                        if (is_legal($(".selected"), $(this))) {
                             $(this).removeClass('nohilite').addClass('hilite');
                         } else {
                             $(this).removeClass('nohilite').addClass('illegal');
@@ -162,11 +171,11 @@ function create_translations_list(i) {
 function is_legal(hypothesis, word) {
     // only highlight if this is a valid extension of that hyp.
     // a word is illegal if it is already covered
-    if (hypothesis.data('item').pos[word.data('pos')])
+    if (hypothesis.data('pos')[word.data('pos')])
         return false;
     else {
         var permitted_distance = $("#constraints").val();
-        var lastpos = hypothesis.data('item').lastpos;
+        var lastpos = hypothesis.data('lastpos');
         var curpos = word.data('pos');
         // permitted
         if (permitted_distance == "0")
@@ -226,24 +235,13 @@ function get_stack(which) {
     }
 }
 
-var dpmap = {
-    'off':    0,
-    'none':    0,
-    'bigram':  1,
-    'trigram': 2,
-};
-
 $(".source")
     .click(function() {
-        var item = make_start_item();
-        if (item.displayed == 0) {
-            item.displayed = 1;
-            get_stack(item.stack).append(item.$.fadeIn());
-        }
+        make_start_item();
     });
 
 function compute_dpstate(phrase) {
-    var histsize = dpmap[$("#dp").val()];
+    var histsize = $("#dp").val();
 
     // debug("shortening " + phrase);
 
@@ -262,44 +260,69 @@ function compute_dpstate(phrase) {
 }
 
 function make_start_item() {
-    var item = new Object();
-    // the words
-    item.words = compute_dpstate("&lt;s&gt;");
-    // the source-language index
-    item.pos = new Array();
+    var item = make_item(SOS);
 
-    item.lastpos = -1;
-
-    // which stack this item will be in
-    item.stack = 0;
-
-    item.backpointer = null;
-
-    // coverage display
-    item.covered = create_coverage_display(item.pos);    
-
-    item.signature = item.words + "-" + item.covered;
-
-    // generate the DOM objects that display the item
-    item.$ = create_item_dom(item);
-    item.displayed = 0;
-
-    var key = item.words + " ||| " + item.covered;
+    var key = item.data('key');
     if (! (key in CHART)) {
+        // create the chart entry
         CHART[key] = item;
+
+        // increment the chart size
         $("#chartsize").text(CHART.size());
+
+        // display it
+        if (! item.is(':visible'))
+            get_stack(item.data('stack')).append(item.fadeIn());
+
     }
 
     return CHART[key];
 }
 
 
-function create_item_dom(item) {
+/*
+ * This function maps from cell signatures to unique names, which
+ * names are valid as CSS Id identifiers.  This allows us to easily
+ * select cells visually by referring to this latter name.  
+ */
+function id(key) {
+    if (! (key in IDS)) {
+        IDS[key] = "cell" + IDS.size();
+    }
+
+    debug("IDS[" + key + "] = " + IDS[key]);
+    return IDS[key];
+}
+
+function make_item(words, pos, olditem) {
     var obj = $("<div></div>")
-        .addClass("stack")
-        .append($("<p></p>")
-                .append(item.words))
-        .append(item.covered)
+        .addClass("stack");
+
+    obj.data('words', compute_dpstate(words));
+    obj.data('pos',   olditem ? olditem.data('pos').slice(0) : new Array());
+    if (pos != undefined)
+        obj.data('pos')[pos] = 1;
+    obj.data('lastpos', -1);
+    obj.data('stack', olditem ? (olditem.data('stack') + 1) : 0);
+    obj.data('backpointer', olditem ? olditem : null);
+    obj.data('covered', create_coverage_display(obj.data('pos')));
+    obj.data('key', obj.data('words') + " ||| " + obj.data('covered'));
+    obj.attr('id', id(obj.data('key')));
+
+    // debug('make_item(' + words + ',' + pos + ')');
+    // debug("obj stack = " + obj.data('stack') + " wordslen = " + WORDS.length);
+
+    // check if the item is complete, and if so, extend it
+    if (obj.data('stack') == WORDS.length) {
+        obj.data('words', obj.data('words') + " " + EOS);
+        obj.data('complete', true);
+    } else {
+        obj.data('complete', false);
+    }
+
+    obj.append($("<p></p>")
+                .append(obj.data('words')))
+        .append(obj.data('covered'))
         .hide()
         .click(function () { 
             var obj = this; toggle_selection(obj); 
@@ -311,11 +334,10 @@ function create_item_dom(item) {
             drop: function(event, ui) {
                 var word = ui.draggable.data('word');
                 var pos  = ui.draggable.data('pos');
-                var item = extend_item($(this).data('item'), word, pos)
-                get_stack(item.stack).append(item.$.fadeIn());
+                var item = extend_item($(this), word, pos);
+                get_stack(item.data('stack')).append(item.fadeIn());
             },
         })
-        .data('item', item)
         .hover(function () { 
             $(this).removeClass("stacknohilite").addClass("stackhilite");
             // $('["' + item.signature + '"]').addClass("stackdphilite");
@@ -327,7 +349,7 @@ function create_item_dom(item) {
             // debug(item.signature + " off: " + $('[signature="' + item.signature + '"]').size());
         });
 
-    if (item.complete) {
+    if (obj.data('complete')) {
         obj.addClass("stackcomplete");
     } else {
         obj.addClass("stacknohilite")
@@ -353,43 +375,15 @@ function create_item_dom(item) {
  * also covers that word.
  */
 function extend_item(olditem,word,pos) {
-    var item = new Object();
+    var words = olditem.data('words') + " " + word;
 
-    item.backpointer = olditem;
+    var item = make_item(words, pos, olditem);
 
-    // extend the hypothesis
-    item.words = compute_dpstate(olditem.words + " " + word);
-
-
-    // is it complete?
-    if (olditem.stack + 1 == words.length) {
-        item.words += compute_dpstate(" " + EOS);
-        item.complete = true;
-    } else {
-        item.complete = false;
-    }
-
-    // copy the coverage array and extend it
-    item.pos = olditem.pos.slice(0);
-    item.pos[pos] = 1;
-    item.stack = olditem.stack + 1;
-    item.lastpos = pos;
-
-    item.covered = create_coverage_display(item.pos);
-
-    item.signature = item.words + "-" + item.covered;
-
-    // generate the DOM objects
-    item.$ = create_item_dom(item);
-    item.displayed = 0;
-
-    var key = item.words + " ||| " + item.covered;
+    var key = item.data('key');
     if (! (key in CHART)) {
         CHART[key] = item;
         $("#chartsize").text(CHART.size());
     }
-
-    olditem.$.addClass(item.words + "-" + item.covered);
 
     return CHART[key];
 }
@@ -401,7 +395,7 @@ function extend_item(olditem,word,pos) {
 // length only).
 function create_coverage_display(array) {
     var covered = "";
-    for (i = 0; i < words.length; i++) {
+    for (i = 0; i < WORDS.length; i++) {
         if (array[i] == 1) {
             covered += "◉";
         } else {
@@ -413,7 +407,7 @@ function create_coverage_display(array) {
 
 
 function translation_options() {
-    // for (i = 1; i < words[index].length; i++) {
+    // for (i = 1; i < WORDS[index].length; i++) {
     // $("div#debug").append("<p>" + i + "/" + j + "</p>");
     ensure_stack_exists(2);
     $("div#debug").append("<p>MATT</p>");
@@ -425,7 +419,7 @@ function id2word(label) {
     var matches = label.match(/(\d+)-(\d+)/);
     var i = matches[1];
     var j = matches[2];
-    return words[i][j];
+    return WORDS[i][j];
 }
 
 function id2index(label) {
