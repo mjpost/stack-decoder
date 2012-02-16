@@ -69,6 +69,10 @@ li.translation {
     border: 3px solid transparent;
 }
 
+span.score {
+    font-size: 8pt;
+}
+
 li.hilite {
     background-color: yellow;
 }
