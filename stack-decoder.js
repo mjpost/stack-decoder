@@ -20,6 +20,9 @@ IDS.size = function() {
     return size;
 }
 
+// number of hypotheses added
+var NUM_HYPOTHESES = 0;
+
 // start- and end-of-sentence
 var SOS = "&lt;s&gt";
 var EOS = "&lt;/s&gt";
@@ -492,7 +495,8 @@ function extend_item(olditem,worditem) {
         CHART[key].after(item.fadeIn(FADE_SPEED).addClass('X').text('X').fadeOut(FADE_SPEED));
     }
 
-    
+    // update the chart size display
+    $("#hypotheses").text(++NUM_HYPOTHESES);
 
     return CHART[key];
 }
