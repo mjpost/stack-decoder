@@ -255,7 +255,11 @@ function get_stack(which) {
                 .addClass('stack-header')
                 .append($("<h3></h3>")
                         .text("Stack (" + i + ")"));
-            $("div#stacks").append(stackdiv);
+            if (i == 0)
+                $("div#stacks").append(stackdiv);
+            else 
+                $("div#stacks :first").before(stackdiv);
+
             STACKS.push(stackdiv);
             // $("#debug").append("<p>creating stack " + i + "</p>");
             // debug("creating stack " + i)

@@ -9,7 +9,7 @@
 - [X] reformat header and tape to look nicer
 - [X] no fixed-width translation items
 - [X] add t-table probabilities to the initial hypotheses
-- [ ] put highest stacks on top
+- [X] put highest stacks on top
 - [ ] allow stacks to be collapsible
 - [ ] print out the translation and model score at the end
 - [ ] highlight backpointers all the way back
