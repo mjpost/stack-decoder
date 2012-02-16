@@ -24,8 +24,8 @@ IDS.size = function() {
 var NUM_HYPOTHESES = 0;
 
 // start- and end-of-sentence
-var SOS = "&lt;s&gt";
-var EOS = "&lt;/s&gt";
+var SOS = "&lt;s&gt;";
+var EOS = "&lt;/s&gt;";
 
 // the stacks that hypotheses are placed in
 var STACKS = Array();
