@@ -36,6 +36,8 @@ var LM_FLOOR = -100;
 // how fast to fade chart items in and out
 var FADE_SPEED = 1000;
 
+var AUTOMATE_DELAY = 1000; // ms
+
 /****************************************************************
  * INITIALIZATION CODE
  ****************************************************************/
@@ -90,6 +92,7 @@ $("#content :first")
 
 // document.writeln("</tr></table></p>");
 
+$("#automate").click(function() { automate() });
 
 /****************************************************************
  * FUNCTIONS
@@ -618,4 +621,45 @@ function bigram_score(history, word) {
 function message(text) {
     $("#message").text(text);
     log(text);
+}
+
+/*
+ * Automates the visualization by simulating click events.
+ */
+function automate() {
+
+    // expand all the source boxes
+    for (var i = 0; i < WORDS.length; i++)
+        $("#source" + i + " p").click();
+
+    // click the start hypothesis
+    for (var stackno = 0; stackno <= WORDS.length; stackno++) {
+
+        // select each stack item, and then select each word
+        $("#stack" + stackno).children().each(function(i) {
+            // skip the header
+            if (i == 0)
+                return true;
+
+            // click the hypothesis
+            automate_function($(this).attr('id'));
+
+            // click each legal next word
+            for (var i = 0; i < WORDS.length; i++) {
+                for (var j = 1; j < WORDS[i].length; j++) {
+                    var label = "target" + i + "-" + j;
+                    var wordobj = $("#" + label);
+                    if (is_legal($(this), wordobj))
+                        automate_function(label);
+                }
+            }
+        });
+        // add all possible words
+    }
+}
+
+var eventNo = 1;
+function automate_function(label) {
+    log("clicking " + label);
+    setTimeout(function() { $("#" + label).click() }, ++eventNo * AUTOMATE_DELAY);
 }
