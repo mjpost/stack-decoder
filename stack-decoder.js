@@ -431,6 +431,10 @@ function extend_item(olditem,worditem) {
             // remove anything tagged with it
             var id = olditem.attr('id');
             $("." + id).removeClass(id);
+
+            message("Replacing existing, lower-scoring stack item.");
+        } else {
+            message("Adding new item to the stack.");
         }
 
         // record the current item
@@ -479,10 +483,11 @@ function extend_item(olditem,worditem) {
 
                 // remove entries that fall outside the beam
                 var stacksize = $("#stacksize").val();
+                if (stack.children().size() - 1 > stacksize)
+                    message("Pruning the stack of " + (stack.children.size() - stacksize - 1) + " candidates");
                 stack.children().each(function(index) {
                     // skip the first element (the stack title)
                     if (index > stacksize) {
-                        log("Removing stack " + item.data('stack') + " item " + index);
                         var key = $(this).data('key');
                         $(this).fadeOut(FADE_SPEED);
                         delete CHART[key];
@@ -493,6 +498,7 @@ function extend_item(olditem,worditem) {
     } else {
         // add the item only to remove it
         CHART[key].after(item.fadeIn(FADE_SPEED).addClass('X').text('X').fadeOut(FADE_SPEED));
+        message("Deleting item, since it has a lower probability than an existing item in the chart.");
     }
 
     // update the chart size display
@@ -611,4 +617,5 @@ function bigram_score(history, word) {
 
 function message(text) {
     $("#message").text(text);
+    log(text);
 }
