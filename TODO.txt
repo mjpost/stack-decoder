@@ -4,7 +4,7 @@
 - [X] add scores
 - [ ] add automation
 - [ ] add ability to dynamically reload ttables
-- [ ] hypotheses popped 
+- [X] hypotheses popped 
 - [ ] script to build language model for dataset
-- [ ] reformat header and tape to look nicer
-- [ ] no fixed-width translation items
+- [X] reformat header and tape to look nicer
+- [X] no fixed-width translation items
