@@ -486,8 +486,8 @@ function extend_item(olditem,worditem) {
 
                 // remove entries that fall outside the beam
                 var stacksize = $("#stacksize").val();
-                if (stack.children().size() - 1 > stacksize)
-                    message("Pruning the stack of " + (stack.children.size() - stacksize - 1) + " candidates");
+                // if (stack.children().size() - 1 > stacksize)
+                    // message("Pruning the stack of " + (stack.children.size() - stacksize - 1) + " candidates");
                 stack.children().each(function(index) {
                     // skip the first element (the stack title)
                     if (index > stacksize) {
