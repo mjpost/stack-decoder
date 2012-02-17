@@ -243,6 +243,7 @@ function get_stack(which) {
                 .addClass('stack-header')
                 .append($("<h3></h3>")
                         .text("Stack"))
+                .append("<div></div>");
             $("div#stacks").append(stackdiv);
             STACKS.push(stackdiv);
         }
@@ -254,7 +255,14 @@ function get_stack(which) {
                 .attr("id", "stack" + i)
                 .addClass('stack-header')
                 .append($("<h3></h3>")
-                        .text("Stack (" + i + ")"));
+                        .click(function() {
+                            if ($(this).next().is(':visible'))
+                                $(this).next().slideUp();
+                            else
+                                $(this).next().slideDown();
+                        })
+                        .text("Stack (" + i + ")"))
+                .append("<div></div>");
             if (i == 0)
                 $("div#stacks").append(stackdiv);
             else 
@@ -264,7 +272,7 @@ function get_stack(which) {
             // $("#debug").append("<p>creating stack " + i + "</p>");
             // debug("creating stack " + i)
         }
-        return STACKS[which];
+        return STACKS[which].children(':last');
     }
 }
 
@@ -462,15 +470,12 @@ function extend_item(olditem,worditem) {
             // if the stack is empty, just append it (empty means that
             // it just has the title element, so it's of size 1)
             var num_children = stack.children().size();
-            if (num_children == 1) {
+            if (num_children == 0) {
                 stack.append(item.fadeIn(FADE_SPEED));
             } else {
                 // otherwise, insert it into the appropriate position on the stack
                 var itemscore = item.data('score');
                 stack.children().each(function(index) {
-                    // skip the first element (the stack title)
-                    if (index == 0)
-                        return true;
 
                     // If we find an element we're greater than,
                     // insert before it.  This maintains a sorted list
@@ -481,7 +486,7 @@ function extend_item(olditem,worditem) {
 
                         // returning false exits the each()
                         return false;
-                    } else if (index == num_children - 1) {
+                    } else if (index + 1 == num_children) {
                         // end of the list
                         $(this).after(item.fadeIn(FADE_SPEED));
                     } else {
