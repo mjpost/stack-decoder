@@ -200,9 +200,9 @@ function create_translations_list(i) {
 function is_legal(hypothesis, word) {
     // only highlight if this is a valid extension of that hyp.
     // a word is illegal if it is already covered
-    if (hypothesis.data('pos')[word.data('pos')])
+    if (hypothesis.data('pos')[word.data('pos')]) {
         return false;
-    else {
+    } else {
         var permitted_distance = $("#constraints").val();
         var lastpos = hypothesis.data('lastpos');
         var curpos = word.data('pos');
@@ -405,12 +405,23 @@ function make_item(worditem, olditem) {
             
             // highlight backpointers
             $("." + $(this).attr('id')).addClass("dp-hilite");
+            var obj = $(this).data('backpointer');
+            while (obj) {
+                obj.addClass('dp-hilite');
+                obj = obj.data('backpointer');
+            }
         }, function () { 
             if (! ($(this).hasClass("selected")))
                 $(this).removeClass("stackhilite").addClass("stacknohilite");
 
             // un-hilite DP backpointers
             $("." + $(this).attr('id')).removeClass('dp-hilite');
+            var obj = $(this).data('backpointer');
+            while (obj) {
+                obj.removeClass('dp-hilite');
+                obj = obj.data('backpointer');
+            }
+
             // restore hilites to selected items
             // $(".selected").removeClass('stacknohilite').addClass('stackhilite');
             // $('["' + item.signature + '"]').removeClass("stacknohilite");
