@@ -128,7 +128,7 @@ function create_translations_list(i) {
                 .attr("id", label)
                 .addClass("translation nohilite")
                 .text(word + " ")
-                .append($("<span></span>").addClass("score").text(score))
+                .append($("<span></span>").addClass("score").text(sprintf('%.2f',score)))
                 .data('word', word)
                 .data('pos', i)
                 .data('score', score)
@@ -377,7 +377,7 @@ function make_item(worditem, olditem) {
 
         var translation = follow_backpointers(obj);
 
-        message("Translation: '" + translation + "' (" + obj.data('score') + ")");
+        message("Translation: '" + translation + "' (" + sprintf('%.2f', obj.data('score')) + ")");
     } else {
         obj.data('complete', false);
     }
