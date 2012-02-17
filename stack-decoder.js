@@ -374,13 +374,17 @@ function make_item(worditem, olditem) {
         obj.data('words', obj.data('words') + " " + EOS);
         obj.data('score', obj.data('score') + bigram_score(obj.data('words'), EOS));
         obj.data('complete', true);
+
+        var translation = follow_backpointers(obj);
+
+        message("Translation: '" + translation + "' (" + obj.data('score') + ")");
     } else {
         obj.data('complete', false);
     }
 
     obj.append(obj.data('words'))
         .append($("<br></br>"))
-        .append(obj.data('score'))
+        .append(sprintf('%.2f', obj.data('score')))
         .append($("<br></br>"))
         .append(obj.data('covered'))
         .hide()
@@ -672,4 +676,14 @@ var eventNo = 1;
 function automate_function(label) {
     log("clicking " + label);
     setTimeout(function() { $("#" + label).click() }, ++eventNo * AUTOMATE_DELAY);
+}
+
+/*
+ * Builds up the translation by following the backpointers.
+ */
+function follow_backpointers(item) {
+    if (item.data('backpointer'))
+        return follow_backpointers(item.data('backpointer')) + " " + item.data('word').data('word');
+
+    return "";
 }
