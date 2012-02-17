@@ -127,7 +127,8 @@ function create_translations_list(i) {
             var item = $("<li></li>")
                 .attr("id", label)
                 .addClass("translation nohilite")
-                .text(word)
+                .text(word + " ")
+                .append($("<span></span>").addClass("score").text(score))
                 .data('word', word)
                 .data('pos', i)
                 .data('score', score)
@@ -254,7 +255,11 @@ function get_stack(which) {
                 .addClass('stack-header')
                 .append($("<h3></h3>")
                         .text("Stack (" + i + ")"));
-            $("div#stacks").append(stackdiv);
+            if (i == 0)
+                $("div#stacks").append(stackdiv);
+            else 
+                $("div#stacks :first").before(stackdiv);
+
             STACKS.push(stackdiv);
             // $("#debug").append("<p>creating stack " + i + "</p>");
             // debug("creating stack " + i)
