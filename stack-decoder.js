@@ -590,6 +590,10 @@ function select_item(div) {
 }
 
 function toggle_selection(div) {
+    if ($(div).data('complete')) {
+        log("Translation: " + follow_backpointers($(div)));
+    }
+
     if (! ($(div).hasClass("selected"))) 
         select_item(div);
     else 
@@ -649,45 +653,75 @@ function message(text) {
 }
 
 /*
- * Automates the visualization by simulating click events.
+ * Automates the visualization by simulating click events.  This is
+ * somewhat complicated by the fact that calls to click() are not
+ * blocking; they are passed to some event model and return
+ * immediately, so you don't direct control over timing, which is
+ * crucial to have.
+ *
+ * Here I implemented the following nasty workaround to accommodate
+ * this.  We break down the steps of the algorithm into click events
+ * wrapped in functions that call execute the click and then schedule
+ * the next event.  We therefore create a new function each time that
+ * has enough information to compute the next move.
  */
 function automate() {
+
+    AUTOMATE_DELAY = $("#delay").val();
 
     // expand all the source boxes
     for (var i = 0; i < WORDS.length; i++)
         $("#source" + i + " p").click();
 
-    // click the start hypothesis
-    for (var stackno = 0; stackno <= WORDS.length; stackno++) {
+    // schedule the first event
+    // the arguments are: automate_click(stackno, hypno, sourceno, transno)
+    window.setTimeout(automate_click(get_stack(0).children(':first'),0,1), AUTOMATE_DELAY);
+}
 
-        // select each stack item, and then select each word
-        $("#stack" + stackno).children().each(function(i) {
-            // skip the header
-            if (i == 0)
-                return true;
+function automate_click(item, i, j) {
+    // log('automate_click(' + item.html() + ',' + i + ',' + j);
 
-            // click the hypothesis
-            automate_function($(this).attr('id'));
+    // select the hypothesis (if not selected)
+    var stackno = item.data('stack');
+    
+    // quit if this is the last stack
+    if (stackno == WORDS.length)
+        return;
 
-            // click each legal next word
-            for (var i = 0; i < WORDS.length; i++) {
-                for (var j = 1; j < WORDS[i].length; j++) {
-                    var label = "target" + i + "-" + j;
-                    var wordobj = $("#" + label);
-                    if (is_legal($(this), wordobj))
-                        automate_function(label);
-                }
+    var stack = get_stack(item.data('stack'));
+
+    if (! item.hasClass("selected"))
+        item.click();
+
+    // click on the word
+    var wordobj = $("#target" + i + "-" + j);
+    wordobj.click();
+
+    // if there's another translation of this word, do that next
+    if (wordobj.next().length != 0) {
+        setTimeout(function() { automate_click(item, i, j+1) }, AUTOMATE_DELAY);
+    } else {
+        // otherwise, find the next valid source word
+        var nexti = i + 1;
+        while (nexti < WORDS.length && item.data('pos')[nexti] == 1)
+            nexti++;
+
+        // if there's an uncovered word, do that next
+        if (nexti < WORDS.length) {
+            setTimeout(function() { automate_click(item, nexti, 1) }, AUTOMATE_DELAY);
+        } else {
+            // move on to the next hypothesis if possible
+            if (item.next().length != 0) {
+                setTimeout(function() { automate_click(item.next(), 0, 1) }, AUTOMATE_DELAY); 
+            } else { 
+                // move on to the next stack
+                var newitem = get_stack(stackno+1).children(':first');
+                setTimeout(function() { automate_click(newitem, 0, 1) }, AUTOMATE_DELAY);
             }
-        });
-        // add all possible words
-    }
+        }
+    }        
 }
 
-var eventNo = 1;
-function automate_function(label) {
-    log("clicking " + label);
-    setTimeout(function() { $("#" + label).click() }, ++eventNo * AUTOMATE_DELAY);
-}
 
 /*
  * Builds up the translation by following the backpointers.
