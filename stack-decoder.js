@@ -464,8 +464,8 @@ function extend_item(olditem,worditem) {
             $("." + id).removeClass(id);
 
             message("Replacing existing, lower-scoring stack item.");
-        } else {
-            message("Adding new item to the stack.");
+        // } else {
+        //     message("Adding new item to the stack.");
         }
 
         // record the current item
