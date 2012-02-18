@@ -177,16 +177,12 @@ inherit properties properly */
     float: left;
     text-align: center;
     border: 3px solid transparent;
+    background-color: #cccccc;
 }
 
 .stackhilite {
-    background-color: yellow;
-    border: 3px solid transparent;
-}
-
-.stacknohilite {
-    background-color: #cccccc;
-    border: 3px dashed #cccccc;
+    background-color: yellow !important;
+    border: 3px solid transparent !important;
 }
 
 .dp-hilite {
@@ -203,7 +199,7 @@ inherit properties properly */
 
 .stackcomplete {
     background-color: Darkorange;
-    border: 1px solid black;
+    border: 3px solid transparent;
 }
 
 #sourcebox {

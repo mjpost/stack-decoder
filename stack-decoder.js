@@ -401,7 +401,7 @@ function make_item(worditem, olditem) {
             },
         })
         .hover(function () { 
-            $(this).removeClass("stacknohilite").addClass("stackhilite");
+            $(this).addClass("stackhilite");
             
             // highlight backpointers
             $("." + $(this).attr('id')).addClass("dp-hilite");
@@ -412,7 +412,7 @@ function make_item(worditem, olditem) {
             }
         }, function () { 
             if (! ($(this).hasClass("selected")))
-                $(this).removeClass("stackhilite").addClass("stacknohilite");
+                $(this).removeClass("stackhilite");
 
             // un-hilite DP backpointers
             $("." + $(this).attr('id')).removeClass('dp-hilite');
@@ -421,17 +421,10 @@ function make_item(worditem, olditem) {
                 obj.removeClass('dp-hilite');
                 obj = obj.data('backpointer');
             }
-
-            // restore hilites to selected items
-            // $(".selected").removeClass('stacknohilite').addClass('stackhilite');
-            // $('["' + item.signature + '"]').removeClass("stacknohilite");
         });
 
-    if (obj.data('complete')) {
+    if (obj.data('complete'))
         obj.addClass("stackcomplete");
-    } else {
-        obj.addClass("stacknohilite")
-    }
 
     return obj;
 
@@ -577,13 +570,13 @@ function id2index(label) {
 
 function deselect_item(div) {
     // deselect this item
-    $(div).removeClass("selected stackhilite").addClass("stacknohilite");
+    $(div).removeClass("selected stackhilite");
     // debug("DESELECT: num=" + count_selected());
 }
 
 function select_item(div) {
     // deselect all other items
-    $(".selected").removeClass("selected stackhilite").addClass("stacknohilite");
+    $(".selected").removeClass("selected stackhilite");
 
     // select this item
     $(div).addClass("stackhilite selected");
@@ -690,8 +683,10 @@ function automate_click(item, i, j) {
 
     var stack = get_stack(item.data('stack'));
 
-    if (! item.hasClass("selected"))
+    if (! item.hasClass("selected")) {
         item.click();
+        item.addClass('stackhilite');
+    }
 
     // click on the word
     var wordobj = $("#target" + i + "-" + j);
