@@ -1,9 +1,31 @@
-This project implements a word-based stack decoder for purposes of
-visualization.  It is written in Javascript and JQuery.
+Use the following procmail setup and rule to have the script called
 
-Currently, the source-language sentence is hard-coded.  To change it,
-you can look for the line that loads "ttable.js" in stack-decoder.html
-and point it to another file.  Two available options are
-"ttable-german.js" and "ttable-spanish.js".  From these files, it
-should be easy to create other sentences.
+  HOME=/users/post
+  MAILDIR=/users/post/mail
+  LOGFILE=/users/post/.maillog
+  LOGABSTRACT=all
+  FROM=`formail -rt -xTo:`
 
+  :0: f
+  * ^Subject: mt-class
+  | python /users/post/code/mt-class/stack-decoder/process-mail.py
+
+This will create files in the data/ directory when people send an email
+to you with a subject of "mt-class" and a body format that looks like
+this:
+
+  0 word
+  1 word
+  2 word
+  ...
+
+where the numbers are indexes and the words are translations of a
+source language sentence.  
+
+You can then build the ttable (and language model) used by the
+JQuery stack decoder by running
+
+  ./build-ttable.py the sentence you had translated ....
+
+where the argument to build-ttable.py is the sentence you had
+translated in the emails that people sent to you.
