@@ -14,3 +14,5 @@
 - [X] print out the translation and model score at the end
 - [X] highlight backpointers all the way back
 - [X] fix bug in build-ttable.py that doesn't remove spaces from words
+- [ ] extend automator to step through translation
+- [ ] better documentation

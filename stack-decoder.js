@@ -263,6 +263,10 @@ function get_stack(which) {
                         })
                         .text("Stack (" + i + ")"))
                 .append("<div></div>");
+
+            if (i == WORDS.length)
+                stackdiv.addClass("stack-complete");
+
             if (i == 0)
                 $("div#stacks").append(stackdiv);
             else 
@@ -391,15 +395,15 @@ function make_item(worditem, olditem) {
         .click(function () { 
             var obj = this; toggle_selection(obj); 
         })
-        .droppable({
-            accept: ".translation",
-            hoverClass: "highlight",
-            tolerance: 'intersect',
-            drop: function(event, ui) {
-                extend_item($(this), ui.draggable);
-                // get_stack(item.data('stack')).append(item.fadeIn());
-            },
-        })
+        // .droppable({
+        //     accept: ".translation",
+        //     hoverClass: "highlight",
+        //     tolerance: 'intersect',
+        //     drop: function(event, ui) {
+        //         extend_item($(this), ui.draggable);
+        //         // get_stack(item.data('stack')).append(item.fadeIn());
+        //     },
+        // })
         .hover(function () { 
             $(this).addClass("stackhilite");
             
@@ -424,7 +428,7 @@ function make_item(worditem, olditem) {
         });
 
     if (obj.data('complete'))
-        obj.addClass("stackcomplete");
+        obj.addClass("item-complete");
 
     return obj;
 
@@ -661,6 +665,7 @@ function message(text) {
 function automate() {
 
     AUTOMATE_DELAY = $("#delay").val();
+    $("#automate").attr('disabled', 'disabled');
 
     // expand all the source boxes
     for (var i = 0; i < WORDS.length; i++)
@@ -691,6 +696,8 @@ function automate_click(item, i, j) {
     // click on the word
     var wordobj = $("#target" + i + "-" + j);
     wordobj.click();
+    wordobj.addClass('hilite');
+    setTimeout(function() { wordobj.removeClass('hilite') }, AUTOMATE_DELAY);
 
     // if there's another translation of this word, do that next
     if (wordobj.next().length != 0) {
