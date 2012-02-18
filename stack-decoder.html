@@ -32,7 +32,7 @@
             <tr>
               <td>Stacks</td>
               <td>
-                <select id="numstacks">
+                <select id="numstacks" class="options">
                   <option value="one">one</option>
                   <option value="words" selected># words</option>
                   <!-- <option value="coverage">coverage</option> -->
@@ -42,7 +42,7 @@
             <tr> 
               <td>Candidates</td> 
               <td> 
-                <select id="numcandidates"> 
+                <select id="numcandidates" class="options"> 
                   <option>1</option> 
                   <option>2</option> 
                   <option>3</option> 
@@ -55,13 +55,13 @@
             <tr>
               <td>Dynamic programming</td>
               <td>
-                <input id="dp" type="checkbox" checked="true"></input>
+                <input id="dp" type="checkbox" checked="true" class="options"></input>
               </td>
             </tr>
             <tr>
               <td>Reordering Constraints</td>
               <td>
-                <select id="constraints">
+                <select id="constraints" class="options">
                   <option value="0" selected>none</option>
                   <option value="+1">monotonic</option>
                   <option value="1">1</option>
@@ -73,15 +73,15 @@
             <tr>
               <td>Stack size</td>
               <td>
-                <input id="stacksize" type="text" size="2" value="3"></input>
+                <input id="stacksize" class="options" type="text" size="2" value="3"></input>
               </td>
             </tr>
             <tr>
               <td>
-                <input id="automate" type="button" value="Automate"></input>
+                <input id="automate" class="options" type="button" value="Automate"></input>
               </td>
               <td>
-                <select id="delay">
+                <select id="delay" class="options">
                   <option value="5000">very slow</option>
                   <option value="2000">slow</option>
                   <option value="1000" selected>medium</option>

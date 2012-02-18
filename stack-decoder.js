@@ -304,6 +304,9 @@ function compute_dpstate(phrase) {
 }
 
 function make_start_item() {
+    // disable options once the user has started clicking around
+    $(".options").attr('disabled', 'disabled');
+
     var empty_word_item = $("<div></div>")
         .data('word', SOS)
         .data('pos', -1)
