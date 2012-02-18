@@ -126,7 +126,7 @@ function create_translations_list(i) {
 
             var item = $("<li></li>")
                 .attr("id", label)
-                .addClass("translation nohilite")
+                .addClass("translation")
                 .text(word + " ")
                 .append($("<span></span>").addClass("score").text(sprintf('%.2f',score)))
                 .data('word', word)
@@ -158,19 +158,19 @@ function create_translations_list(i) {
                     switch(num_selected) {
                     case 0:
                         // nothing can be done if nothing is selected
-                        $(this).removeClass('nohilite').addClass('illegal');
+                        $(this).addClass('illegal');
                         message("Select a hypothesis to extend.");
                         break;
                     case 1:
                         if (is_legal($(".selected"), $(this))) {
-                            $(this).removeClass('nohilite').addClass('hilite');
+                            $(this).addClass('hilite');
                         } else {
-                            $(this).removeClass('nohilite').addClass('illegal');
+                            $(this).addClass('illegal');
                         }
 
                     }
                 },function(e) {
-                    $(this).removeClass("hilite illegal").addClass('nohilite');
+                    $(this).removeClass("hilite illegal");
                 });
             // .draggable({
             //     cancel: "a.ui-icon",
