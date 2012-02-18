@@ -515,7 +515,7 @@ function extend_item(olditem,worditem) {
                     // message("Pruning the stack of " + (stack.children.size() - stacksize - 1) + " candidates");
                 stack.children().each(function(index) {
                     // skip the first element (the stack title)
-                    if (index > stacksize) {
+                    if (index >= stacksize) {
                         var key = $(this).data('key');
                         $(this).fadeOut(FADE_SPEED);
                         delete CHART[key];
