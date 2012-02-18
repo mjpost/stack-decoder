@@ -701,7 +701,8 @@ function automate_click(item, i, j) {
     if (wordobj.next().length != 0) {
         setTimeout(function() { automate_click(item, i, j+1) }, AUTOMATE_DELAY);
     } else {
-        // otherwise, find the next valid source word
+        // otherwise, find the next valid source word, moving through
+        // the options until we find one that's not covered
         var nexti = i + 1;
         while (nexti < WORDS.length && item.data('pos')[nexti] == 1)
             nexti++;
@@ -710,11 +711,16 @@ function automate_click(item, i, j) {
         if (nexti < WORDS.length) {
             setTimeout(function() { automate_click(item, nexti, 1) }, AUTOMATE_DELAY);
         } else {
-            // move on to the next hypothesis if possible
-            if (item.next().length != 0) {
-                setTimeout(function() { automate_click(item.next(), 0, 1) }, AUTOMATE_DELAY); 
+            // otherwise, move on to the next hypothesis if possible
+            var nextitem = item.next();
+            while (nextitem.length != 0 && nextitem.is(":hidden"))
+                nextitem = nextitem.next();
+
+            // if we ended up at a valid one, run it
+            if (nextitem.length != 0) {
+                setTimeout(function() { automate_click(nextitem, 0, 1) }, AUTOMATE_DELAY); 
             } else { 
-                // move on to the next stack
+                // otherwise, move on to the next stack
                 var newitem = get_stack(stackno+1).children(':first');
                 setTimeout(function() { automate_click(newitem, 0, 1) }, AUTOMATE_DELAY);
             }
